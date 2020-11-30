@@ -17,11 +17,24 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(sick_safetyscanners_base REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-add_executable(sick_safetyscanners2_node src/sick_safetyscanners2_node.cpp)
+set(dependencies
+  rclcpp
+  sick_safetyscanners_base)
+
+add_executable(sick_safetyscanners2_node 
+  src/sick_safetyscanners2_node.cpp
+  src/SickSafetyscannersRos2.cpp)
+
+target_link_libraries(sick_safetyscanners2_node sick_safetyscanners_base::sick_safetyscanners_base)
+
+ament_target_dependencies(sick_safetyscanners2_node ${dependencies})
+
 target_include_directories(sick_safetyscanners2_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
@@ -40,5 +53,7 @@ if(BUILD_TESTING)
   #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+ament_export_dependencies(${dependencies})
 
 ament_package()
