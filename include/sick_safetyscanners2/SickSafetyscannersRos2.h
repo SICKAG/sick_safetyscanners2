@@ -8,9 +8,9 @@ class SickSafetyscannersRos2 : public rclcpp::Node
 {
   public:
     SickSafetyscannersRos2();
-    void receiveUDPPaket(sick::datastructure::Data& data);
     
   private:
+    void receiveUDPPaket(const sick::datastructure::Data& data);
 
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
 
