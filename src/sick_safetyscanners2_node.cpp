@@ -13,7 +13,7 @@ int main(int argc, char ** argv)
   printf("hello world sick_safetyscanners2 package\n");
 
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<SickSafetyscannersRos2>());
+  rclcpp::spin(std::make_shared<sick::SickSafetyscannersRos2>());
   rclcpp::shutdown();
   return 0;
 }
