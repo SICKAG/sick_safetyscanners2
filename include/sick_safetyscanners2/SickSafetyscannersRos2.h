@@ -1,7 +1,7 @@
-#include<sick_safetyscanners_base/SickSafetyscanners.h>
-#include<sick_safetyscanners_base/datastructure/Data.h>
+#include <sick_safetyscanners_base/SickSafetyscanners.h>
+#include <sick_safetyscanners_base/datastructure/Data.h>
 
-#include<sensor_msgs/msg/laser_scan.hpp>
+#include <sensor_msgs/msg/laser_scan.hpp>
 
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/string.hpp>
@@ -43,17 +43,17 @@ inline uint16_t skipToPublishFrequency(int skip)
 
 class SickSafetyscannersRos2 : public rclcpp::Node
 {
-  public:
-    SickSafetyscannersRos2();
- 
-  private:
-    void receiveUDPPaket(const sick::datastructure::Data& data);
+public:
+  SickSafetyscannersRos2();
 
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
-    rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr m_laser_scan_publisher;
+private:
+  void receiveUDPPaket(const sick::datastructure::Data& data);
 
-    std::unique_ptr<sick::AsyncSickSafetyScanner> m_device;
-    sick::datastructure::CommSettings m_communications_settings;
+  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+  rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr m_laser_scan_publisher;
+
+  std::unique_ptr<sick::AsyncSickSafetyScanner> m_device;
+  sick::datastructure::CommSettings m_communications_settings;
 
   std::string m_frame_id;
   double m_time_offset;
@@ -69,20 +69,19 @@ class SickSafetyscannersRos2 : public rclcpp::Node
   float m_angle_offset;
   bool m_use_pers_conf;
 
-    //diagnostics?
-    
+  // diagnostics?
 
-    //dynamic reconfigure?
-    
-    
-    sensor_msgs::msg::LaserScan createLaserScanMessage(const sick::datastructure::Data& data);
-    //void createExtendedLaserScanMessage(const sick::datastructure::Data& data);
-    //void createOutputPathsMessage(const sick::datastructure::Data& data);
-    //void createRawDataMessage(const sick::datastructure::Data& data);
 
-    //bool getFieldData();
+  // dynamic reconfigure?
 
-    //void getMedianReflectors(const sick::datastructure::Data);
 
+  sensor_msgs::msg::LaserScan createLaserScanMessage(const sick::datastructure::Data& data);
+  // void createExtendedLaserScanMessage(const sick::datastructure::Data& data);
+  // void createOutputPathsMessage(const sick::datastructure::Data& data);
+  // void createRawDataMessage(const sick::datastructure::Data& data);
+
+  // bool getFieldData();
+
+  // void getMedianReflectors(const sick::datastructure::Data);
 };
-}
+} // namespace sick

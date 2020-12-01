@@ -1,14 +1,14 @@
 #include <cstdio>
 
 #include <rclcpp/rclcpp.hpp>
-#include<sick_safetyscanners_base/SickSafetyscanners.h>
+#include <sick_safetyscanners_base/SickSafetyscanners.h>
 
 #include <sick_safetyscanners2/SickSafetyscannersRos2.h>
 
-int main(int argc, char ** argv)
+int main(int argc, char** argv)
 {
-  (void) argc;
-  (void) argv;
+  (void)argc;
+  (void)argv;
 
   printf("hello world sick_safetyscanners2 package\n");
 

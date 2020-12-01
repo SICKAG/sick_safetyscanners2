@@ -5,7 +5,7 @@ namespace sick {
 
 SickSafetyscannersRos2::SickSafetyscannersRos2()
   : Node("SickSafetyscannersRos2")
- // , m_initialised(false)
+  // , m_initialised(false)
   , m_time_offset(0.0)
   , m_range_min(0.0)
   , m_range_max(100.0) // TODO read from typecode
@@ -14,51 +14,53 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
 {
   std::cout << "Init ROS2 Node" << std::endl;
 
-  //TODO read params!
+  // TODO read params!
   m_frame_id = "scan";
 
   m_laser_scan_publisher = this->create_publisher<sensor_msgs::msg::LaserScan>("scan", 1);
 
 
   // Sensor IP and Port
-sick::types::ip_address_t sensor_ip = boost::asio::ip::address_v4::from_string("192.168.1.11");
-sick::types::port_t tcp_port {2122};
+  sick::types::ip_address_t sensor_ip = boost::asio::ip::address_v4::from_string("192.168.1.11");
+  sick::types::port_t tcp_port{2122};
 
-// Prepare the CommSettings for Sensor streaming data
-sick::datastructure::CommSettings comm_settings;
-comm_settings.host_ip = boost::asio::ip::address_v4::from_string("192.168.1.9");
-comm_settings.host_udp_port = 0;
-
-
-// Bind callback
-std::function< void(const sick::datastructure::Data&) > callback = std::bind( &SickSafetyscannersRos2::receiveUDPPaket, this, std::placeholders::_1 );
+  // Prepare the CommSettings for Sensor streaming data
+  sick::datastructure::CommSettings comm_settings;
+  comm_settings.host_ip       = boost::asio::ip::address_v4::from_string("192.168.1.9");
+  comm_settings.host_udp_port = 0;
 
 
+  // Bind callback
+  std::function<void(const sick::datastructure::Data&)> callback =
+    std::bind(&SickSafetyscannersRos2::receiveUDPPaket, this, std::placeholders::_1);
 
-// Create a sensor instance
-m_device = std::make_unique<sick::AsyncSickSafetyScanner>(sensor_ip, tcp_port, comm_settings, callback);
 
-// Start async receiving and processing of sensor data
-m_device->run();
-std::cout << "Running" << std::endl;
+  // Create a sensor instance
+  m_device =
+    std::make_unique<sick::AsyncSickSafetyScanner>(sensor_ip, tcp_port, comm_settings, callback);
 
+  // Start async receiving and processing of sensor data
+  m_device->run();
+  std::cout << "Running" << std::endl;
 }
-    
+
 void SickSafetyscannersRos2::receiveUDPPaket(const sick::datastructure::Data& data)
 {
   std::cout << "Received UDP Packet" << std::endl;
   std::cout << "Number of beams: " << data.getMeasurementDataPtr()->getNumberOfBeams() << std::endl;
-  if (!data.getMeasurementDataPtr()->isEmpty() && !data.getDerivedValuesPtr()->isEmpty()) {
+  if (!data.getMeasurementDataPtr()->isEmpty() && !data.getDerivedValuesPtr()->isEmpty())
+  {
     auto scan = createLaserScanMessage(data);
-    //publish
+    // publish
     m_laser_scan_publisher->publish(scan);
   }
 }
-    
-sensor_msgs::msg::LaserScan SickSafetyscannersRos2::createLaserScanMessage(const sick::datastructure::Data& data)
+
+sensor_msgs::msg::LaserScan
+SickSafetyscannersRos2::createLaserScanMessage(const sick::datastructure::Data& data)
 {
   sensor_msgs::msg::LaserScan scan;
-  scan.header.frame_id = m_frame_id; 
+  scan.header.frame_id = m_frame_id;
   scan.header.stamp    = now();
   // Add time offset (to account for network latency etc.)
   // scan.header.stamp += ros::Duration().fromSec(m_time_offset); TODO
@@ -72,7 +74,7 @@ sensor_msgs::msg::LaserScan SickSafetyscannersRos2::createLaserScanMessage(const
     sick::degToRad(data.getMeasurementDataPtr()
                      ->getScanPointsVector()
                      .at(data.getMeasurementDataPtr()->getScanPointsVector().size() - 1)
-                     .getAngle()  +
+                     .getAngle() +
                    m_angle_offset);
   scan.angle_max       = angle_max;
   scan.angle_increment = sick::degToRad(data.getDerivedValuesPtr()->getAngularBeamResolution());
@@ -113,4 +115,4 @@ sensor_msgs::msg::LaserScan SickSafetyscannersRos2::createLaserScanMessage(const
   return scan;
 }
 
-} //End namespace
+} // namespace sick
