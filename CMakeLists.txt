@@ -46,10 +46,10 @@ target_include_directories(sick_safetyscanners2_node PUBLIC
   $<INSTALL_INTERFACE:include>)
 
 #TODO new install directory for launch/ directories
-#install(DIRECTORY
-#launch
-#DESTINATION share/${PROJECT_NAME}/
-#)
+install(DIRECTORY
+launch
+DESTINATION share/${PROJECT_NAME}/
+)
 
 install(TARGETS sick_safetyscanners2_node
   EXPORT export_${PROJECT_NAME}
