@@ -74,6 +74,9 @@ private:
 
   // dynamic reconfigure?
 
+  void initialize_parameters();
+  void load_parameters();
+
 
   sensor_msgs::msg::LaserScan createLaserScanMessage(const sick::datastructure::Data& data);
   // void createExtendedLaserScanMessage(const sick::datastructure::Data& data);

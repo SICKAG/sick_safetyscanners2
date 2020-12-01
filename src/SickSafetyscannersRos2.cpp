@@ -15,7 +15,8 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
   std::cout << "Init ROS2 Node" << std::endl;
 
   // TODO read params!
-  m_frame_id = "scan";
+  initialize_parameters();
+  load_parameters();
 
   m_laser_scan_publisher = this->create_publisher<sensor_msgs::msg::LaserScan>("scan", 1);
 
@@ -44,10 +45,51 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
   std::cout << "Running" << std::endl;
 }
 
+void SickSafetyscannersRos2::initialize_parameters()
+{
+  this->declare_parameter<std::string>("frame_id", "scan");
+  this->declare_parameter<std::string>("sensor_ip", "192.168.1.10");
+  this->declare_parameter<std::string>("host_ip", "192.168.1.9");
+  this->declare_parameter<int>("host_udp_port", 0);
+  this->declare_parameter<int>("channel", 0);
+  this->declare_parameter<bool>("channel_enabled", true);
+  this->declare_parameter<int>("skip", 0);
+  this->declare_parameter<float>("angle_start", 0.f);
+  this->declare_parameter<float>("angle_end", 0.f);
+  this->declare_parameter<float>("time_offset", 0.f); //TODO
+  this->declare_parameter<bool>("general_system_state", true);
+  this->declare_parameter<bool>("derived_settings", true);
+  this->declare_parameter<bool>("measurement_data", true);
+  this->declare_parameter<bool>("intrusion_data", true);
+  this->declare_parameter<bool>("application_io_data", true);
+  this->declare_parameter<bool>("use_persistent_config", true);
+  this->declare_parameter<float>("min_intensities", 255.f);
+}
+
+void SickSafetyscannersRos2::load_parameters()
+{
+  rclcpp::Logger node_logger = this->get_logger();
+
+  this->get_parameter<std::string>("frame_id", m_frame_id);
+  RCLCPP_INFO(node_logger, "frame_id: %s", m_frame_id.c_str());
+  std::string sensor_ip; //TODO
+  this->get_parameter<std::string>("sensor_ip", sensor_ip);
+  RCLCPP_INFO(node_logger, "sensor_ip: %s", sensor_ip.c_str());
+  std::string host_ip;
+  this->get_parameter<std::string>("host_ip", host_ip);
+  RCLCPP_INFO(node_logger, "host_ip: %s", host_ip.c_str());
+  //TODO check if valid IP?
+  m_communications_settings.host_ip = boost::asio::ip::address_v4::from_string(host_ip);
+  int host_udp_port;
+  this->get_parameter<int>("host_udp_port", host_udp_port);
+  RCLCPP_INFO(node_logger, "host_udp_port: %i", host_udp_port);
+  m_communications_settings.host_udp_port = host_udp_port;
+}
+
 void SickSafetyscannersRos2::receiveUDPPaket(const sick::datastructure::Data& data)
 {
-  std::cout << "Received UDP Packet" << std::endl;
-  std::cout << "Number of beams: " << data.getMeasurementDataPtr()->getNumberOfBeams() << std::endl;
+  //std::cout << "Received UDP Packet" << std::endl;
+  //std::cout << "Number of beams: " << data.getMeasurementDataPtr()->getNumberOfBeams() << std::endl;
   if (!data.getMeasurementDataPtr()->isEmpty() && !data.getDerivedValuesPtr()->isEmpty())
   {
     auto scan = createLaserScanMessage(data);
