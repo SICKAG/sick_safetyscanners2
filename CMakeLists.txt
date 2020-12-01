@@ -19,22 +19,26 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sick_safetyscanners_base REQUIRED)
+find_package(Boost REQUIRED COMPONENTS chrono)
+find_package(sensor_msgs REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
 set(dependencies
   rclcpp
-  sick_safetyscanners_base)
+  sensor_msgs
+  sick_safetyscanners_base
+  )
 
 add_executable(sick_safetyscanners2_node 
   src/sick_safetyscanners2_node.cpp
   src/SickSafetyscannersRos2.cpp)
 
 target_link_libraries(sick_safetyscanners2_node 
-  sick_safetyscanners_base::sick_safetyscanners_base)
+  sick_safetyscanners_base::sick_safetyscanners_base
+  ${Boost_LIBRARIES})
 
-#TODO set dependencies here by name
 ament_target_dependencies(sick_safetyscanners2_node ${dependencies})
 
 target_include_directories(sick_safetyscanners2_node PUBLIC
@@ -63,6 +67,7 @@ if(BUILD_TESTING)
 endif()
 
 #TODO lookup what this does
+# For message creation,if used in this message
 ament_export_dependencies(${dependencies})
 
 ament_package()
