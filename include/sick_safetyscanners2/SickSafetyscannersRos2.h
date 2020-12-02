@@ -61,6 +61,7 @@ private:
   std::unique_ptr<sick::AsyncSickSafetyScanner> m_device;
   sick::datastructure::CommSettings m_communications_settings;
 
+
   boost::asio::ip::address_v4 m_sensor_ip;
   std::string m_frame_id;
   double m_time_offset;
@@ -91,6 +92,8 @@ private:
   // void createRawDataMessage(const sick::datastructure::Data& data);
 
   // bool getFieldData();
+  void readTypeCodeSettings();
+  void readPersistentConfig();
 
   // void getMedianReflectors(const sick::datastructure::Data);
 };

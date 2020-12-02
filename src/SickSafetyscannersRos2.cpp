@@ -14,17 +14,12 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
 {
   std::cout << "Init ROS2 Node" << std::endl;
 
-  // TODO read params!
+  // read parameters!
   initialize_parameters();
   load_parameters();
   sick::types::port_t tcp_port{2122};
 
   m_laser_scan_publisher = this->create_publisher<sensor_msgs::msg::LaserScan>("scan", 1);
-
-
-  // Prepare the CommSettings for Sensor streaming data
-  // sick::datastructure::CommSettings comm_settings;
-  // comm_settings.host_ip       = boost::asio::ip::address_v4::from_string("192.168.1.9");
 
 
   // Bind callback
@@ -38,7 +33,34 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
 
   // Start async receiving and processing of sensor data
   m_device->run();
-  std::cout << "Running" << std::endl;
+  RCLCPP_INFO(this->get_logger(), "Communication to Sensor Setup");
+
+  readTypeCodeSettings();
+
+  if (m_use_pers_conf)
+  {
+    readPersistentConfig();
+  }
+  RCLCPP_INFO(this->get_logger(), "Node Configured and running");
+}
+
+void SickSafetyscannersRos2::readTypeCodeSettings()
+{
+  RCLCPP_INFO(this->get_logger(), "Reading Type code settings");
+  sick::datastructure::TypeCode type_code;
+  m_device->requestTypeCode(type_code);
+  m_communications_settings.e_interface_type = type_code.getInterfaceType();
+  m_range_min                                = 0.1;
+  m_range_max                                = type_code.getMaxRange();
+}
+
+void SickSafetyscannersRos2::readPersistentConfig()
+{
+  RCLCPP_INFO(this->get_logger(), "Reading Persistent Configuration");
+  sick::datastructure::ConfigData config_data;
+  m_device->requestPersistentConfig(config_data);
+  m_communications_settings.start_angle = config_data.getStartAngle();
+  m_communications_settings.end_angle   = config_data.getEndAngle();
 }
 
 void SickSafetyscannersRos2::initialize_parameters()
