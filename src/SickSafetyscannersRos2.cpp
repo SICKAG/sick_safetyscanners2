@@ -8,11 +8,11 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
   // , m_initialised(false)
   , m_time_offset(0.0)
   , m_range_min(0.0)
-  , m_range_max(100.0) // TODO read from typecode
+  , m_range_max(0.0)
   , m_angle_offset(-90.0)
   , m_use_pers_conf(false)
 {
-  std::cout << "Init ROS2 Node" << std::endl;
+  RCLCPP_INFO(this->get_logger(), "Initializing SickSafetyscannersRos2 Node");
 
   // read parameters!
   initialize_parameters();
