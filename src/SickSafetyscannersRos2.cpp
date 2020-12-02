@@ -33,7 +33,7 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
 
   // Start async receiving and processing of sensor data
   m_device->run();
-  RCLCPP_INFO(this->get_logger(), "Communication to Sensor Setup");
+  RCLCPP_INFO(this->get_logger(), "Communication to Sensor set up");
 
   readTypeCodeSettings();
 
