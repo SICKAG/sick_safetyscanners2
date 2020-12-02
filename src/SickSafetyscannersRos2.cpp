@@ -5,7 +5,6 @@ namespace sick {
 
 SickSafetyscannersRos2::SickSafetyscannersRos2()
   : Node("SickSafetyscannersRos2")
-  // , m_initialised(false)
   , m_time_offset(0.0)
   , m_range_min(0.0)
   , m_range_max(0.0)
@@ -19,6 +18,10 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
   load_parameters();
   sick::types::port_t tcp_port{2122};
 
+  // TODO reconfigure?
+  // TODO diagnostics
+
+  // TODO further publishers
   m_laser_scan_publisher = this->create_publisher<sensor_msgs::msg::LaserScan>("scan", 1);
 
 
