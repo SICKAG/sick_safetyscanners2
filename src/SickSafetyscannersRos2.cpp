@@ -40,7 +40,9 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
   if (m_use_pers_conf)
   {
     readPersistentConfig();
+    m_device->changeSensorSettings(m_communications_settings);
   }
+
   RCLCPP_INFO(this->get_logger(), "Node Configured and running");
 }
 
