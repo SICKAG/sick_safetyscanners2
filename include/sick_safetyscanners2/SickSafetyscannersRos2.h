@@ -1,5 +1,6 @@
 #include <sick_safetyscanners_base/SickSafetyscanners.h>
 #include <sick_safetyscanners_base/datastructure/Data.h>
+#include <sick_safetyscanners_base/Types.h>
 
 #include <sensor_msgs/msg/laser_scan.hpp>
 
@@ -8,7 +9,7 @@
 
 namespace sick {
 
-
+//TODO put in utils?
 /*!
  * \brief Converts degrees to radians.
  * \param deg Degrees to convert.
@@ -41,6 +42,11 @@ inline uint16_t skipToPublishFrequency(int skip)
   return skip + 1;
 }
 
+inline std::string btoa(bool x)
+{
+  return ((x)?"true":"false"); 
+}
+
 class SickSafetyscannersRos2 : public rclcpp::Node
 {
 public:
@@ -55,6 +61,7 @@ private:
   std::unique_ptr<sick::AsyncSickSafetyScanner> m_device;
   sick::datastructure::CommSettings m_communications_settings;
 
+  boost::asio::ip::address_v4 m_sensor_ip;
   std::string m_frame_id;
   double m_time_offset;
   double m_range_min;
