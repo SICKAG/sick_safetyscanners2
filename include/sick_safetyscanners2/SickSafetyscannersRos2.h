@@ -4,7 +4,7 @@
 
 #include <sick_safetyscanners2_interfaces/msg/output_paths_msg.hpp>
 
-#include <sick_safetyscanners2/utils/conversions.h>
+#include <sick_safetyscanners2/utils/Conversions.h>
 
 #include <sensor_msgs/msg/laser_scan.hpp>
 
