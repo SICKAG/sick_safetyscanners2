@@ -85,7 +85,7 @@ void SickSafetyscannersRos2::initialize_parameters()
   this->declare_parameter<bool>("measurement_data", true);
   this->declare_parameter<bool>("intrusion_data", true);
   this->declare_parameter<bool>("application_io_data", true);
-  this->declare_parameter<bool>("use_persistent_config", true);
+  this->declare_parameter<bool>("use_persistent_config", false);
   this->declare_parameter<float>("min_intensities", 0.f);
 }
 
