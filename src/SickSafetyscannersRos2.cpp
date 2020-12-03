@@ -46,6 +46,7 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
     m_device->changeSensorSettings(m_communications_settings);
   }
 
+  m_msg_creator = std::make_unique<sick::MessageCreator>(m_frame_id, m_time_offset, m_range_min, m_range_max, m_angle_offset, m_min_intensities);
   RCLCPP_INFO(this->get_logger(), "Node Configured and running");
 }
 
@@ -191,6 +192,8 @@ void SickSafetyscannersRos2::receiveUDPPaket(const sick::datastructure::Data& da
   if (!data.getMeasurementDataPtr()->isEmpty() && !data.getDerivedValuesPtr()->isEmpty())
   {
     auto scan = createLaserScanMessage(data);
+    //auto scan = m_msg_creator->createLaserScanMsg(data);
+    //scan.header.stamp = now();
     // publish
     m_laser_scan_publisher->publish(scan);
   }

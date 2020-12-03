@@ -1,3 +1,7 @@
+#ifndef SICK_UTILS_CONVERSIONS
+#define SICK_UTILS_CONVERSIONS
+
+#include <sick_safetyscanners_base/Types.h>
 
 namespace sick {
 
@@ -38,4 +42,5 @@ inline std::string btoa(bool x)
   return ((x) ? "true" : "false");
 }
 
-} //End namespace sick
+} // End namespace sick
+#endif

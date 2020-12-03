@@ -5,6 +5,7 @@
 #include <sick_safetyscanners2_interfaces/msg/output_paths_msg.hpp>
 
 #include <sick_safetyscanners2/utils/Conversions.h>
+#include <sick_safetyscanners2/utils/MessageCreator.h>
 
 #include <sensor_msgs/msg/laser_scan.hpp>
 
@@ -27,6 +28,7 @@ private:
   std::unique_ptr<sick::AsyncSickSafetyScanner> m_device;
   sick::datastructure::CommSettings m_communications_settings;
 
+  std::unique_ptr<sick::MessageCreator> m_msg_creator;
 
   boost::asio::ip::address_v4 m_sensor_ip;
   std::string m_frame_id;
