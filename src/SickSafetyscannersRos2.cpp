@@ -23,6 +23,9 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
 
   // TODO further publishers
   m_laser_scan_publisher = this->create_publisher<sensor_msgs::msg::LaserScan>("scan", 1);
+  m_extended_laser_scan_publisher =
+    this->create_publisher<sick_safetyscanners2_interfaces::msg::ExtendedLaserScan>("extended_scan",
+                                                                                    1);
   m_output_paths_publisher =
     this->create_publisher<sick_safetyscanners2_interfaces::msg::OutputPathsMsg>("output_paths", 1);
 
@@ -199,10 +202,11 @@ void SickSafetyscannersRos2::receiveUDPPaket(const sick::datastructure::Data& da
     // publish
     m_laser_scan_publisher->publish(scan);
 
-    // sick_safetyscanners::ExtendedLaserScanMsg extended_scan =
-    // createExtendedLaserScanMessage(data);
+    sick_safetyscanners2_interfaces::msg::ExtendedLaserScan extended_scan =
+      m_msg_creator->createExtendedLaserScanMsg(data, this->now());
 
-    // m_extended_laser_scan_publisher.publish
+    m_extended_laser_scan_publisher->publish(extended_scan);
+
     auto output_paths = m_msg_creator->createOutputPathsMsg(data);
     m_output_paths_publisher->publish(output_paths);
   }
