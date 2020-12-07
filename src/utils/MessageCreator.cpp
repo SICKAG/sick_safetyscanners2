@@ -1,22 +1,26 @@
-#include<sick_safetyscanners2/utils/MessageCreator.h>
+#include <sick_safetyscanners2/utils/MessageCreator.h>
 
 namespace sick {
 
-  MessageCreator::MessageCreator(std::string frame_id, double time_offset, double range_min, double range_max, float angle_offset, double min_intensities)
-    : m_frame_id(frame_id)
-      , m_time_offset(time_offset)
-      , m_range_min(range_min)
-      , m_range_max(range_max)
-      ,m_angle_offset(angle_offset)
-      , m_min_intensities(min_intensities)
-  {
+MessageCreator::MessageCreator(std::string frame_id,
+                               double time_offset,
+                               double range_min,
+                               double range_max,
+                               float angle_offset,
+                               double min_intensities)
+  : m_frame_id(frame_id)
+  , m_time_offset(time_offset)
+  , m_range_min(range_min)
+  , m_range_max(range_max)
+  , m_angle_offset(angle_offset)
+  , m_min_intensities(min_intensities)
+{
+}
 
-  }
 
-
-  sensor_msgs::msg::LaserScan MessageCreator::createLaserScanMsg( const sick::datastructure::Data& data, rclcpp::Time now )
-  {
-
+sensor_msgs::msg::LaserScan
+MessageCreator::createLaserScanMsg(const sick::datastructure::Data& data, rclcpp::Time now)
+{
   sensor_msgs::msg::LaserScan scan;
   scan.header.frame_id = m_frame_id;
   scan.header.stamp    = now;
@@ -71,7 +75,40 @@ namespace sick {
   }
 
   return scan;
+}
 
+sick_safetyscanners2_interfaces::msg::OutputPathsMsg
+MessageCreator::createOutputPathsMsg(const sick::datastructure::Data& data)
+{
+  sick_safetyscanners2_interfaces::msg::OutputPathsMsg msg;
+
+  std::shared_ptr<sick::datastructure::ApplicationData> app_data = data.getApplicationDataPtr();
+  sick::datastructure::ApplicationOutputs outputs                = app_data->getOutputs();
+
+  std::vector<bool> eval_out         = outputs.getEvalOutVector();
+  std::vector<bool> eval_out_is_safe = outputs.getEvalOutIsSafeVector();
+  std::vector<bool> eval_out_valid   = outputs.getEvalOutIsValidVector();
+
+  std::vector<uint16_t> monitoring_case_numbers  = outputs.getMonitoringCaseVector();
+  std::vector<bool> monitoring_case_number_flags = outputs.getMonitoringCaseFlagsVector();
+
+  // Fix according to issue #46, however why this appears is not clear
+  if (monitoring_case_number_flags.size() > 0)
+  {
+    msg.active_monitoring_case = monitoring_case_numbers.at(0);
+  }
+  else
+  {
+    msg.active_monitoring_case = 0;
   }
 
-} //end namespace sick
+  for (size_t i = 0; i < eval_out.size(); i++)
+  {
+    msg.status.push_back(eval_out.at(i));
+    msg.is_safe.push_back(eval_out_is_safe.at(i));
+    msg.is_valid.push_back(eval_out_valid.at(i));
+  }
+  return msg;
+}
+
+} // end namespace sick

@@ -18,7 +18,8 @@ public:
                  double min_intensities);
 
 
-  sensor_msgs::msg::LaserScan createLaserScanMsg(const sick::datastructure::Data& data, rclcpp::Time now);
+  sensor_msgs::msg::LaserScan createLaserScanMsg(const sick::datastructure::Data& data,
+                                                 rclcpp::Time now);
   sick_safetyscanners2_interfaces::msg::OutputPathsMsg
   createOutputPathsMsg(const sick::datastructure::Data& data);
 

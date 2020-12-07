@@ -24,6 +24,8 @@ private:
 
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
   rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr m_laser_scan_publisher;
+  rclcpp::Publisher<sick_safetyscanners2_interfaces::msg::OutputPathsMsg>::SharedPtr
+    m_output_paths_publisher;
 
   std::unique_ptr<sick::AsyncSickSafetyScanner> m_device;
   sick::datastructure::CommSettings m_communications_settings;

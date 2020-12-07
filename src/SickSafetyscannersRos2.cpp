@@ -23,7 +23,8 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
 
   // TODO further publishers
   m_laser_scan_publisher = this->create_publisher<sensor_msgs::msg::LaserScan>("scan", 1);
-
+  m_output_paths_publisher =
+    this->create_publisher<sick_safetyscanners2_interfaces::msg::OutputPathsMsg>("output_paths", 1);
 
   // Bind callback
   std::function<void(const sick::datastructure::Data&)> callback =
@@ -46,7 +47,8 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
 
   // Start async receiving and processing of sensor data
   m_device->run();
-  m_msg_creator = std::make_unique<sick::MessageCreator>(m_frame_id, m_time_offset, m_range_min, m_range_max, m_angle_offset, m_min_intensities);
+  m_msg_creator = std::make_unique<sick::MessageCreator>(
+    m_frame_id, m_time_offset, m_range_min, m_range_max, m_angle_offset, m_min_intensities);
   RCLCPP_INFO(this->get_logger(), "Node Configured and running");
 }
 
@@ -191,11 +193,18 @@ void SickSafetyscannersRos2::receiveUDPPaket(const sick::datastructure::Data& da
   // std::endl;
   if (!data.getMeasurementDataPtr()->isEmpty() && !data.getDerivedValuesPtr()->isEmpty())
   {
-    //auto scan = createLaserScanMessage(data);
+    // auto scan = createLaserScanMessage(data);
     auto scan = m_msg_creator->createLaserScanMsg(data, this->now());
-    //scan.header.stamp = now();
+    // scan.header.stamp = now();
     // publish
     m_laser_scan_publisher->publish(scan);
+
+    // sick_safetyscanners::ExtendedLaserScanMsg extended_scan =
+    // createExtendedLaserScanMessage(data);
+
+    // m_extended_laser_scan_publisher.publish
+    auto output_paths = m_msg_creator->createOutputPathsMsg(data);
+    m_output_paths_publisher->publish(output_paths);
   }
 }
 
