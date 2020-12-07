@@ -4,6 +4,7 @@
 
 #include <sick_safetyscanners2_interfaces/msg/extended_laser_scan.hpp>
 #include <sick_safetyscanners2_interfaces/msg/output_paths_msg.hpp>
+#include <sick_safetyscanners2_interfaces/srv/field_data.hpp>
 
 #include <sick_safetyscanners2/utils/Conversions.h>
 #include <sick_safetyscanners2/utils/MessageCreator.h>
@@ -29,6 +30,7 @@ private:
     m_extended_laser_scan_publisher;
   rclcpp::Publisher<sick_safetyscanners2_interfaces::msg::OutputPathsMsg>::SharedPtr
     m_output_paths_publisher;
+  rclcpp::Service<sick_safetyscanners2_interfaces::srv::FieldData>::SharedPtr m_field_data_service;
 
   std::unique_ptr<sick::AsyncSickSafetyScanner> m_device;
   sick::datastructure::CommSettings m_communications_settings;
@@ -59,12 +61,10 @@ private:
   void load_parameters();
 
 
-  sensor_msgs::msg::LaserScan createLaserScanMessage(const sick::datastructure::Data& data);
-  // void createExtendedLaserScanMessage(const sick::datastructure::Data& data);
-  // void createOutputPathsMessage(const sick::datastructure::Data& data);
-  // void createRawDataMessage(const sick::datastructure::Data& data);
-
   // bool getFieldData();
+  bool getFieldData(
+    const std::shared_ptr<sick_safetyscanners2_interfaces::srv::FieldData::Request> request,
+    std::shared_ptr<sick_safetyscanners2_interfaces::srv::FieldData::Response> response);
   void readTypeCodeSettings();
   void readPersistentConfig();
 

@@ -29,6 +29,11 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
   m_output_paths_publisher =
     this->create_publisher<sick_safetyscanners2_interfaces::msg::OutputPathsMsg>("output_paths", 1);
 
+  m_field_data_service = this->create_service<sick_safetyscanners2_interfaces::srv::FieldData>(
+    "field_data",
+    std::bind(
+      &SickSafetyscannersRos2::getFieldData, this, std::placeholders::_1, std::placeholders::_2));
+
   // Bind callback
   std::function<void(const sick::datastructure::Data&)> callback =
     std::bind(&SickSafetyscannersRos2::receiveUDPPaket, this, std::placeholders::_1);
@@ -212,63 +217,58 @@ void SickSafetyscannersRos2::receiveUDPPaket(const sick::datastructure::Data& da
   }
 }
 
-sensor_msgs::msg::LaserScan
-SickSafetyscannersRos2::createLaserScanMessage(const sick::datastructure::Data& data)
+
+bool SickSafetyscannersRos2::getFieldData(
+  const std::shared_ptr<sick_safetyscanners2_interfaces::srv::FieldData::Request> request,
+  std::shared_ptr<sick_safetyscanners2_interfaces::srv::FieldData::Response> response)
 {
-  sensor_msgs::msg::LaserScan scan;
-  scan.header.frame_id = m_frame_id;
-  scan.header.stamp    = now();
-  // Add time offset (to account for network latency etc.)
-  // scan.header.stamp += ros::Duration().fromSec(m_time_offset); TODO
-  // TODO check why returned number of beams is misaligned to size of vector
-  std::vector<sick::datastructure::ScanPoint> scan_points =
-    data.getMeasurementDataPtr()->getScanPointsVector();
-  uint32_t num_scan_points = scan_points.size();
+  std::vector<sick::datastructure::FieldData> fields;
+  m_device->requestFieldData(fields);
 
-  scan.angle_min = sick::degToRad(data.getDerivedValuesPtr()->getStartAngle() + m_angle_offset);
-  double angle_max =
-    sick::degToRad(data.getMeasurementDataPtr()
-                     ->getScanPointsVector()
-                     .at(data.getMeasurementDataPtr()->getScanPointsVector().size() - 1)
-                     .getAngle() +
-                   m_angle_offset);
-  scan.angle_max       = angle_max;
-  scan.angle_increment = sick::degToRad(data.getDerivedValuesPtr()->getAngularBeamResolution());
-  boost::posix_time::microseconds time_increment =
-    boost::posix_time::microseconds(data.getDerivedValuesPtr()->getInterbeamPeriod());
-  scan.time_increment = time_increment.total_microseconds() * 1e-6;
-  boost::posix_time::milliseconds scan_time =
-    boost::posix_time::milliseconds(data.getDerivedValuesPtr()->getScanTime());
-  scan.scan_time = scan_time.total_microseconds() * 1e-6;
-  // TODO
-  scan.range_min = m_range_min;
-  scan.range_max = m_range_max;
-  scan.ranges.resize(num_scan_points);
-  scan.intensities.resize(num_scan_points);
-
-
-  for (uint32_t i = 0; i < num_scan_points; ++i)
+  for (size_t i = 0; i < fields.size(); i++)
   {
-    const sick::datastructure::ScanPoint scan_point = scan_points.at(i);
-    // Filter for intensities
-    if (m_min_intensities < static_cast<double>(scan_point.getReflectivity()))
+    sick::datastructure::FieldData field = fields.at(i);
+    sick_safetyscanners2_interfaces::msg::Field field_msg;
+
+    field_msg.start_angle        = degToRad(field.getStartAngle() + m_angle_offset);
+    field_msg.angular_resolution = degToRad(field.getAngularBeamResolution());
+    field_msg.protective_field   = field.getIsProtectiveField();
+
+    std::vector<uint16_t> ranges = field.getBeamDistances();
+    for (size_t j = 0; j < ranges.size(); j++)
     {
-      scan.ranges[i] = static_cast<float>(scan_point.getDistance()) *
-                       data.getDerivedValuesPtr()->getMultiplicationFactor() * 1e-3; // mm -> m
-      // Set values close to/greater than max range to infinity according to REP 117
-      // https://www.ros.org/reps/rep-0117.html
-      if (scan.ranges[i] >= (0.999 * m_range_max))
-      {
-        scan.ranges[i] = std::numeric_limits<double>::infinity();
-      }
+      field_msg.ranges.push_back(static_cast<float>(ranges.at(j)) * 1e-3);
     }
-    else
-    {
-      scan.ranges[i] = std::numeric_limits<double>::infinity();
-    }
-    scan.intensities[i] = static_cast<float>(scan_point.getReflectivity());
+
+    response->fields.push_back(field_msg);
   }
-  return scan;
+
+  datastructure::DeviceName device_name;
+  m_device->requestDeviceName(device_name);
+  response->device_name = device_name.getDeviceName();
+
+
+  std::vector<sick::datastructure::MonitoringCaseData> monitoring_cases;
+  m_device->requestMonitoringCases(monitoring_cases);
+
+  for (size_t i = 0; i < monitoring_cases.size(); i++)
+  {
+    sick::datastructure::MonitoringCaseData monitoring_case_data = monitoring_cases.at(i);
+    sick_safetyscanners2_interfaces::msg::MonitoringCase monitoring_case_msg;
+
+    monitoring_case_msg.monitoring_case_number = monitoring_case_data.getMonitoringCaseNumber();
+    std::vector<uint16_t> mon_fields           = monitoring_case_data.getFieldIndices();
+    std::vector<bool> mon_fields_valid         = monitoring_case_data.getFieldsValid();
+    for (size_t j = 0; j < mon_fields.size(); j++)
+    {
+      monitoring_case_msg.fields.push_back(mon_fields.at(j));
+      monitoring_case_msg.fields_valid.push_back(mon_fields_valid.at(j));
+    }
+    response->monitoring_cases.push_back(monitoring_case_msg);
+  }
+
+  return true;
 }
+
 
 } // namespace sick
