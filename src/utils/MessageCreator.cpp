@@ -14,14 +14,12 @@ namespace sick {
   }
 
 
-  sensor_msgs::msg::LaserScan MessageCreator::createLaserScanMsg( const sick::datastructure::Data& data )
+  sensor_msgs::msg::LaserScan MessageCreator::createLaserScanMsg( const sick::datastructure::Data& data, rclcpp::Time now )
   {
 
   sensor_msgs::msg::LaserScan scan;
   scan.header.frame_id = m_frame_id;
-  std::cout << "test" << std::endl;
-  //TODO
-  //scan.header.stamp    = rclcpp::Node::now();
+  scan.header.stamp    = now;
   // Add time offset (to account for network latency etc.)
   // scan.header.stamp += ros::Duration().fromSec(m_time_offset); TODO
   // TODO check why returned number of beams is misaligned to size of vector
