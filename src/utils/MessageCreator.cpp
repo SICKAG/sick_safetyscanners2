@@ -168,7 +168,7 @@ MessageCreator::createRawDataMsg(const sick::datastructure::Data& data)
   sick_safetyscanners2_interfaces::msg::RawMicroScanData msg;
 
   msg.header               = createDataHeaderMsg(data);
-  //msg.derived_values       = createDerivedValuesMsg(data);
+  msg.derived_values       = createDerivedValuesMsg(data);
   //msg.general_system_state = createGeneralSystemStateMsg(data);
   //msg.measurement_data     = createMeasurementDataMsg(data);
   //msg.intrusion_data       = createIntrusionDataMsg(data);
@@ -209,6 +209,20 @@ MessageCreator::createDataHeaderMsg(const sick::datastructure::Data& data)
 sick_safetyscanners2_interfaces::msg::DerivedValues
 MessageCreator::createDerivedValuesMsg(const sick::datastructure::Data& data)
 {
+    sick_safetyscanners2_interfaces::msg::DerivedValues msg;
+
+  if (!data.getDerivedValuesPtr()->isEmpty())
+  {
+    std::shared_ptr<sick::datastructure::DerivedValues> derived_values = data.getDerivedValuesPtr();
+
+    msg.multiplication_factor   = derived_values->getMultiplicationFactor();
+    msg.scan_time               = derived_values->getScanTime();
+    msg.interbeam_period        = derived_values->getInterbeamPeriod();
+    msg.number_of_beams         = derived_values->getNumberOfBeams();
+    msg.start_angle             = derived_values->getStartAngle() + m_angle_offset;
+    msg.angular_beam_resolution = derived_values->getAngularBeamResolution();
+  }
+  return msg;
 }
 
 sick_safetyscanners2_interfaces::msg::GeneralSystemState
