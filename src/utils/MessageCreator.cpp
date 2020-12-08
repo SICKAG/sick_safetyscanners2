@@ -168,11 +168,11 @@ MessageCreator::createRawDataMsg(const sick::datastructure::Data& data)
   sick_safetyscanners2_interfaces::msg::RawMicroScanData msg;
 
   msg.header               = createDataHeaderMsg(data);
-  msg.derived_values       = createDerivedValuesMsg(data);
-  msg.general_system_state = createGeneralSystemStateMsg(data);
-  msg.measurement_data     = createMeasurementDataMsg(data);
-  msg.intrusion_data       = createIntrusionDataMsg(data);
-  msg.application_data     = createApplicationDataMsg(data);
+  //msg.derived_values       = createDerivedValuesMsg(data);
+  //msg.general_system_state = createGeneralSystemStateMsg(data);
+  //msg.measurement_data     = createMeasurementDataMsg(data);
+  //msg.intrusion_data       = createIntrusionDataMsg(data);
+  //msg.application_data     = createApplicationDataMsg(data);
 
   return msg;
 }
@@ -181,6 +181,29 @@ MessageCreator::createRawDataMsg(const sick::datastructure::Data& data)
 sick_safetyscanners2_interfaces::msg::DataHeader
 MessageCreator::createDataHeaderMsg(const sick::datastructure::Data& data)
 {
+  sick_safetyscanners2_interfaces::msg::DataHeader msg;
+
+  if (!data.getDataHeaderPtr()->isEmpty())
+  {
+    std::shared_ptr<sick::datastructure::DataHeader> data_header = data.getDataHeaderPtr();
+
+    msg.version_version       = data_header->getVersionIndicator();
+    msg.version_release       = data_header->getVersionRelease();
+    msg.version_major_version = data_header->getVersionMajorVersion();
+    msg.version_minor_version = data_header->getVersionMinorVersion();
+
+    msg.scan_number     = data_header->getScanNumber();
+    msg.sequence_number = data_header->getSequenceNumber();
+
+    msg.serial_number_of_device       = data_header->getSerialNumberOfDevice();
+    msg.serial_number_of_channel_plug = data_header->getSerialNumberOfSystemPlug();
+
+    msg.channel_number = data_header->getChannelNumber();
+
+    msg.timestamp_date = data_header->getTimestampDate();
+    msg.timestamp_time = data_header->getTimestampTime();
+  }
+  return msg;
 }
 
 sick_safetyscanners2_interfaces::msg::DerivedValues
