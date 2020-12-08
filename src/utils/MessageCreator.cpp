@@ -162,4 +162,60 @@ MessageCreator::getMedianReflectors(const std::vector<sick::datastructure::ScanP
   return res;
 }
 
+sick_safetyscanners2_interfaces::msg::RawMicroScanData
+MessageCreator::createRawDataMsg(const sick::datastructure::Data& data)
+{
+}
+
+
+sick_safetyscanners2_interfaces::msg::DataHeader
+MessageCreator::createDataHeaderMsg(const sick::datastructure::Data& data)
+{
+}
+
+sick_safetyscanners2_interfaces::msg::DerivedValues
+MessageCreator::createDerivedValuesMsg(const sick::datastructure::Data& data)
+{
+}
+
+sick_safetyscanners2_interfaces::msg::GeneralSystemState
+MessageCreator::createGeneralSystemStateMsg(const sick::datastructure::Data& data)
+{
+}
+
+sick_safetyscanners2_interfaces::msg::MeasurementData
+MessageCreator::createMeasurementDataMsg(const sick::datastructure::Data& data)
+{
+}
+
+std::vector<sick_safetyscanners2_interfaces::msg::ScanPoint>
+MessageCreator::createScanPointMsgVector(const sick::datastructure::Data& data)
+{
+}
+
+sick_safetyscanners2_interfaces::msg::IntrusionData
+MessageCreator::createIntrusionDataMsg(const sick::datastructure::Data& data)
+{
+}
+
+std::vector<sick_safetyscanners2_interfaces::msg::IntrusionDatum>
+MessageCreator::createIntrusionDatumMsgVector(const sick::datastructure::Data& data)
+{
+}
+
+sick_safetyscanners2_interfaces::msg::ApplicationData
+MessageCreator::createApplicationDataMsg(const sick::datastructure::Data& data)
+{
+}
+
+sick_safetyscanners2_interfaces::msg::ApplicationInputs
+MessageCreator::createApplicationInputsMsg(const sick::datastructure::Data& data)
+{
+}
+
+sick_safetyscanners2_interfaces::msg::ApplicationOutputs
+MessageCreator::createApplicationOutputsMsg(const sick::datastructure::Data& data)
+{
+}
+
 } // end namespace sick
