@@ -321,11 +321,37 @@ MessageCreator::createScanPointMsgVector(const sick::datastructure::Data& data)
 sick_safetyscanners2_interfaces::msg::IntrusionData
 MessageCreator::createIntrusionDataMsg(const sick::datastructure::Data& data)
 {
+  sick_safetyscanners2_interfaces::msg::IntrusionData msg;
+
+  if (!data.getIntrusionDataPtr()->isEmpty())
+  {
+    msg.data = createIntrusionDatumMsgVector(data);
+  }
+  return msg;
 }
 
 std::vector<sick_safetyscanners2_interfaces::msg::IntrusionDatum>
 MessageCreator::createIntrusionDatumMsgVector(const sick::datastructure::Data& data)
 {
+  std::vector<sick_safetyscanners2_interfaces::msg::IntrusionDatum> msg_vector;
+
+  std::shared_ptr<sick::datastructure::IntrusionData> intrusion_data = data.getIntrusionDataPtr();
+  std::vector<sick::datastructure::IntrusionDatum> intrusion_datums =
+    intrusion_data->getIntrusionDataVector();
+
+  for (size_t i = 0; i < intrusion_datums.size(); i++)
+  {
+    sick_safetyscanners2_interfaces::msg::IntrusionDatum msg;
+    sick::datastructure::IntrusionDatum intrusion_datum = intrusion_datums.at(i);
+    msg.size                                            = intrusion_datum.getSize();
+    std::vector<bool> flags                             = intrusion_datum.getFlagsVector();
+    for (size_t j = 0; j < flags.size(); j++)
+    {
+      msg.flags.push_back(flags.at(j));
+    }
+    msg_vector.push_back(msg);
+  }
+  return msg_vector;
 }
 
 sick_safetyscanners2_interfaces::msg::ApplicationData
