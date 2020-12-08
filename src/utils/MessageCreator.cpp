@@ -169,7 +169,7 @@ MessageCreator::createRawDataMsg(const sick::datastructure::Data& data)
 
   msg.header               = createDataHeaderMsg(data);
   msg.derived_values       = createDerivedValuesMsg(data);
-  //msg.general_system_state = createGeneralSystemStateMsg(data);
+  msg.general_system_state = createGeneralSystemStateMsg(data);
   //msg.measurement_data     = createMeasurementDataMsg(data);
   //msg.intrusion_data       = createIntrusionDataMsg(data);
   //msg.application_data     = createApplicationDataMsg(data);
@@ -228,6 +228,52 @@ MessageCreator::createDerivedValuesMsg(const sick::datastructure::Data& data)
 sick_safetyscanners2_interfaces::msg::GeneralSystemState
 MessageCreator::createGeneralSystemStateMsg(const sick::datastructure::Data& data)
 {
+  sick_safetyscanners2_interfaces::msg::GeneralSystemState msg;
+
+  if (!data.getGeneralSystemStatePtr()->isEmpty())
+  {
+    std::shared_ptr<sick::datastructure::GeneralSystemState> general_system_state =
+      data.getGeneralSystemStatePtr();
+
+    msg.run_mode_active          = general_system_state->getRunModeActive();
+    msg.standby_mode_active      = general_system_state->getStandbyModeActive();
+    msg.contamination_warning    = general_system_state->getContaminationWarning();
+    msg.contamination_error      = general_system_state->getContaminationError();
+    msg.reference_contour_status = general_system_state->getReferenceContourStatus();
+    msg.manipulation_status      = general_system_state->getManipulationStatus();
+
+    std::vector<bool> safe_cut_off_path = general_system_state->getSafeCutOffPathVector();
+    for (size_t i = 0; i < safe_cut_off_path.size(); i++)
+    {
+      msg.safe_cut_off_path.push_back(safe_cut_off_path.at(i));
+    }
+
+    std::vector<bool> non_safe_cut_off_path = general_system_state->getNonSafeCutOffPathVector();
+    for (size_t i = 0; i < non_safe_cut_off_path.size(); i++)
+    {
+      msg.non_safe_cut_off_path.push_back(non_safe_cut_off_path.at(i));
+    }
+
+    std::vector<bool> reset_required_cut_off_path =
+      general_system_state->getResetRequiredCutOffPathVector();
+    for (size_t i = 0; i < reset_required_cut_off_path.size(); i++)
+    {
+      msg.reset_required_cut_off_path.push_back(reset_required_cut_off_path.at(i));
+    }
+
+    msg.current_monitoring_case_no_table_1 =
+      general_system_state->getCurrentMonitoringCaseNoTable1();
+    msg.current_monitoring_case_no_table_2 =
+      general_system_state->getCurrentMonitoringCaseNoTable2();
+    msg.current_monitoring_case_no_table_3 =
+      general_system_state->getCurrentMonitoringCaseNoTable3();
+    msg.current_monitoring_case_no_table_4 =
+      general_system_state->getCurrentMonitoringCaseNoTable4();
+
+    msg.application_error = general_system_state->getApplicationError();
+    msg.device_error      = general_system_state->getDeviceError();
+  }
+  return msg;
 }
 
 sick_safetyscanners2_interfaces::msg::MeasurementData
