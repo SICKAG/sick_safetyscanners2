@@ -209,7 +209,7 @@ MessageCreator::createDataHeaderMsg(const sick::datastructure::Data& data)
 sick_safetyscanners2_interfaces::msg::DerivedValues
 MessageCreator::createDerivedValuesMsg(const sick::datastructure::Data& data)
 {
-    sick_safetyscanners2_interfaces::msg::DerivedValues msg;
+  sick_safetyscanners2_interfaces::msg::DerivedValues msg;
 
   if (!data.getDerivedValuesPtr()->isEmpty())
   {
@@ -292,7 +292,7 @@ MessageCreator::createMeasurementDataMsg(const sick::datastructure::Data& data)
 std::vector<sick_safetyscanners2_interfaces::msg::ScanPoint>
 MessageCreator::createScanPointMsgVector(const sick::datastructure::Data& data)
 {
-    std::vector<sick_safetyscanners2_interfaces::msg::ScanPoint> msg_vector;
+  std::vector<sick_safetyscanners2_interfaces::msg::ScanPoint> msg_vector;
 
   std::shared_ptr<sick::datastructure::MeasurementData> measurement_data =
     data.getMeasurementDataPtr();
