@@ -198,15 +198,9 @@ void SickSafetyscannersRos2::load_parameters()
 
 void SickSafetyscannersRos2::receiveUDPPaket(const sick::datastructure::Data& data)
 {
-  // std::cout << "Received UDP Packet" << std::endl;
-  // std::cout << "Number of beams: " << data.getMeasurementDataPtr()->getNumberOfBeams() <<
-  // std::endl;
   if (!data.getMeasurementDataPtr()->isEmpty() && !data.getDerivedValuesPtr()->isEmpty())
   {
-    // auto scan = createLaserScanMessage(data);
     auto scan = m_msg_creator->createLaserScanMsg(data, this->now());
-    // scan.header.stamp = now();
-    // publish
     m_laser_scan_publisher->publish(scan);
 
     sick_safetyscanners2_interfaces::msg::ExtendedLaserScan extended_scan =
