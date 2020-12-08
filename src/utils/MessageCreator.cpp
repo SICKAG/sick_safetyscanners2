@@ -171,8 +171,8 @@ MessageCreator::createRawDataMsg(const sick::datastructure::Data& data)
   msg.derived_values       = createDerivedValuesMsg(data);
   msg.general_system_state = createGeneralSystemStateMsg(data);
   msg.measurement_data     = createMeasurementDataMsg(data);
-  //msg.intrusion_data       = createIntrusionDataMsg(data);
-  //msg.application_data     = createApplicationDataMsg(data);
+  msg.intrusion_data       = createIntrusionDataMsg(data);
+  msg.application_data     = createApplicationDataMsg(data);
 
   return msg;
 }
@@ -357,16 +357,106 @@ MessageCreator::createIntrusionDatumMsgVector(const sick::datastructure::Data& d
 sick_safetyscanners2_interfaces::msg::ApplicationData
 MessageCreator::createApplicationDataMsg(const sick::datastructure::Data& data)
 {
+  sick_safetyscanners2_interfaces::msg::ApplicationData msg;
+
+  if (!data.getApplicationDataPtr()->isEmpty())
+  {
+    msg.inputs  = createApplicationInputsMsg(data);
+    msg.outputs = createApplicationOutputsMsg(data);
+  }
+  return msg;
 }
 
 sick_safetyscanners2_interfaces::msg::ApplicationInputs
 MessageCreator::createApplicationInputsMsg(const sick::datastructure::Data& data)
 {
+  sick_safetyscanners2_interfaces::msg::ApplicationInputs msg;
+
+  std::shared_ptr<sick::datastructure::ApplicationData> app_data = data.getApplicationDataPtr();
+  sick::datastructure::ApplicationInputs inputs                  = app_data->getInputs();
+  std::vector<bool> unsafe_inputs       = inputs.getUnsafeInputsInputSourcesVector();
+  std::vector<bool> unsafe_inputs_flags = inputs.getUnsafeInputsFlagsVector();
+  for (size_t i = 0; i < unsafe_inputs.size(); i++)
+  {
+    msg.unsafe_inputs_input_sources.push_back(unsafe_inputs.at(i));
+    msg.unsafe_inputs_flags.push_back(unsafe_inputs_flags.at(i));
+  }
+  std::vector<uint16_t> monitoring_case   = inputs.getMonitoringCasevector();
+  std::vector<bool> monitoring_case_flags = inputs.getMonitoringCaseFlagsVector();
+  for (size_t i = 0; i < monitoring_case.size(); i++)
+  {
+    msg.monitoring_case_number_inputs.push_back(monitoring_case.at(i));
+    msg.monitoring_case_number_inputs_flags.push_back(monitoring_case_flags.at(i));
+  }
+  msg.linear_velocity_inputs_velocity_0                    = inputs.getVelocity0();
+  msg.linear_velocity_inputs_velocity_0_transmitted_safely = inputs.getVelocity0TransmittedSafely();
+  msg.linear_velocity_inputs_velocity_0_valid              = inputs.getVelocity0Valid();
+  msg.linear_velocity_inputs_velocity_1                    = inputs.getVelocity1();
+  msg.linear_velocity_inputs_velocity_1_transmitted_safely = inputs.getVelocity1TransmittedSafely();
+  msg.linear_velocity_inputs_velocity_1_valid              = inputs.getVelocity1Valid();
+
+  msg.sleep_mode_input = inputs.getSleepModeInput();
+
+  return msg;
 }
 
 sick_safetyscanners2_interfaces::msg::ApplicationOutputs
 MessageCreator::createApplicationOutputsMsg(const sick::datastructure::Data& data)
 {
+  sick_safetyscanners2_interfaces::msg::ApplicationOutputs msg;
+
+  std::shared_ptr<sick::datastructure::ApplicationData> app_data = data.getApplicationDataPtr();
+  sick::datastructure::ApplicationOutputs outputs                = app_data->getOutputs();
+
+  std::vector<bool> eval_out         = outputs.getEvalOutVector();
+  std::vector<bool> eval_out_is_safe = outputs.getEvalOutIsSafeVector();
+  std::vector<bool> eval_out_valid   = outputs.getEvalOutIsValidVector();
+  for (size_t i = 0; i < eval_out.size(); i++)
+  {
+    msg.evaluation_path_outputs_eval_out.push_back(eval_out.at(i));
+    msg.evaluation_path_outputs_is_safe.push_back(eval_out_is_safe.at(i));
+    msg.evaluation_path_outputs_is_valid.push_back(eval_out_valid.at(i));
+  }
+
+  std::vector<uint16_t> monitoring_case   = outputs.getMonitoringCaseVector();
+  std::vector<bool> monitoring_case_flags = outputs.getMonitoringCaseFlagsVector();
+  for (size_t i = 0; i < monitoring_case.size(); i++)
+  {
+    msg.monitoring_case_number_outputs.push_back(monitoring_case.at(i));
+    msg.monitoring_case_number_outputs_flags.push_back(monitoring_case_flags.at(i));
+  }
+
+  msg.sleep_mode_output       = outputs.getSleepModeOutput();
+  msg.sleep_mode_output_valid = outputs.getFlagsSleepModeOutputIsValid();
+
+  msg.error_flag_contamination_warning      = outputs.getHostErrorFlagContaminationWarning();
+  msg.error_flag_contamination_error        = outputs.getHostErrorFlagContaminationError();
+  msg.error_flag_manipulation_error         = outputs.getHostErrorFlagManipulationError();
+  msg.error_flag_glare                      = outputs.getHostErrorFlagGlare();
+  msg.error_flag_reference_contour_intruded = outputs.getHostErrorFlagReferenceContourIntruded();
+  msg.error_flag_critical_error             = outputs.getHostErrorFlagCriticalError();
+  msg.error_flags_are_valid                 = outputs.getFlagsHostErrorFlagsAreValid();
+
+  msg.linear_velocity_outputs_velocity_0 = outputs.getVelocity0();
+  msg.linear_velocity_outputs_velocity_0_transmitted_safely =
+    outputs.getVelocity0TransmittedSafely();
+  msg.linear_velocity_outputs_velocity_0_valid = outputs.getVelocity0Valid();
+  msg.linear_velocity_outputs_velocity_1       = outputs.getVelocity1();
+  msg.linear_velocity_outputs_velocity_1_transmitted_safely =
+    outputs.getVelocity1TransmittedSafely();
+  msg.linear_velocity_outputs_velocity_1_valid = outputs.getVelocity1Valid();
+
+  std::vector<int16_t> resulting_velocities    = outputs.getResultingVelocityVector();
+  std::vector<bool> resulting_velocities_flags = outputs.getResultingVelocityIsValidVector();
+
+  for (size_t i = 0; i < resulting_velocities.size(); i++)
+  {
+    msg.resulting_velocity.push_back(resulting_velocities.at(i));
+    msg.resulting_velocity_flags.push_back(resulting_velocities_flags.at(i));
+  }
+
+
+  return msg;
 }
 
 } // end namespace sick
