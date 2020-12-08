@@ -170,7 +170,7 @@ MessageCreator::createRawDataMsg(const sick::datastructure::Data& data)
   msg.header               = createDataHeaderMsg(data);
   msg.derived_values       = createDerivedValuesMsg(data);
   msg.general_system_state = createGeneralSystemStateMsg(data);
-  //msg.measurement_data     = createMeasurementDataMsg(data);
+  msg.measurement_data     = createMeasurementDataMsg(data);
   //msg.intrusion_data       = createIntrusionDataMsg(data);
   //msg.application_data     = createApplicationDataMsg(data);
 
@@ -279,11 +279,43 @@ MessageCreator::createGeneralSystemStateMsg(const sick::datastructure::Data& dat
 sick_safetyscanners2_interfaces::msg::MeasurementData
 MessageCreator::createMeasurementDataMsg(const sick::datastructure::Data& data)
 {
+  sick_safetyscanners2_interfaces::msg::MeasurementData msg;
+
+  if (!data.getMeasurementDataPtr()->isEmpty())
+  {
+    msg.number_of_beams = data.getMeasurementDataPtr()->getNumberOfBeams();
+    msg.scan_points     = createScanPointMsgVector(data);
+  }
+  return msg;
 }
 
 std::vector<sick_safetyscanners2_interfaces::msg::ScanPoint>
 MessageCreator::createScanPointMsgVector(const sick::datastructure::Data& data)
 {
+    std::vector<sick_safetyscanners2_interfaces::msg::ScanPoint> msg_vector;
+
+  std::shared_ptr<sick::datastructure::MeasurementData> measurement_data =
+    data.getMeasurementDataPtr();
+  std::vector<sick::datastructure::ScanPoint> scan_points = measurement_data->getScanPointsVector();
+  // uint32_t num_points                                     = measurement_data->getNumberOfBeams();
+  uint32_t num_points = scan_points.size();
+  for (uint32_t i = 0; i < num_points; i++)
+  {
+    sick::datastructure::ScanPoint scan_point = scan_points.at(i);
+    sick_safetyscanners2_interfaces::msg::ScanPoint msg;
+    msg.distance              = scan_point.getDistance();
+    msg.reflectivity          = scan_point.getReflectivity();
+    msg.angle                 = scan_point.getAngle() + m_angle_offset;
+    msg.valid                 = scan_point.getValidBit();
+    msg.infinite              = scan_point.getInfiniteBit();
+    msg.glare                 = scan_point.getGlareBit();
+    msg.reflector             = scan_point.getReflectorBit();
+    msg.contamination_warning = scan_point.getContaminationWarningBit();
+    msg.contamination         = scan_point.getContaminationBit();
+
+    msg_vector.push_back(msg);
+  }
+  return msg_vector;
 }
 
 sick_safetyscanners2_interfaces::msg::IntrusionData
