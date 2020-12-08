@@ -28,6 +28,8 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
                                                                                     1);
   m_output_paths_publisher =
     this->create_publisher<sick_safetyscanners2_interfaces::msg::OutputPaths>("output_paths", 1);
+  m_raw_data_publisher =
+    this->create_publisher<sick_safetyscanners2_interfaces::msg::RawMicroScanData>("raw_data", 1);
 
   m_field_data_service = this->create_service<sick_safetyscanners2_interfaces::srv::FieldData>(
     "field_data",
@@ -215,6 +217,9 @@ void SickSafetyscannersRos2::receiveUDPPaket(const sick::datastructure::Data& da
     auto output_paths = m_msg_creator->createOutputPathsMsg(data);
     m_output_paths_publisher->publish(output_paths);
   }
+
+  auto raw_msg = m_msg_creator->createRawDataMsg(data);
+  m_raw_data_publisher->publish(raw_msg);
 }
 
 

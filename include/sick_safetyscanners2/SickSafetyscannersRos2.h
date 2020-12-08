@@ -30,6 +30,8 @@ private:
     m_extended_laser_scan_publisher;
   rclcpp::Publisher<sick_safetyscanners2_interfaces::msg::OutputPaths>::SharedPtr
     m_output_paths_publisher;
+  rclcpp::Publisher<sick_safetyscanners2_interfaces::msg::RawMicroScanData>::SharedPtr
+    m_raw_data_publisher;
   rclcpp::Service<sick_safetyscanners2_interfaces::srv::FieldData>::SharedPtr m_field_data_service;
 
   std::unique_ptr<sick::AsyncSickSafetyScanner> m_device;
