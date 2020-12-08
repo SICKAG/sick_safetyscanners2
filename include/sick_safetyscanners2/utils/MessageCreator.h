@@ -2,7 +2,7 @@
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <sick_safetyscanners2/utils/Conversions.h>
 #include <sick_safetyscanners2_interfaces/msg/extended_laser_scan.hpp>
-#include <sick_safetyscanners2_interfaces/msg/output_paths_msg.hpp>
+#include <sick_safetyscanners2_interfaces/msg/output_paths.hpp>
 #include <sick_safetyscanners_base/Types.h>
 #include <sick_safetyscanners_base/datastructure/Data.h>
 
@@ -21,7 +21,7 @@ public:
 
   sensor_msgs::msg::LaserScan createLaserScanMsg(const sick::datastructure::Data& data,
                                                  rclcpp::Time now);
-  sick_safetyscanners2_interfaces::msg::OutputPathsMsg
+  sick_safetyscanners2_interfaces::msg::OutputPaths
   createOutputPathsMsg(const sick::datastructure::Data& data);
   sick_safetyscanners2_interfaces::msg::ExtendedLaserScan
   createExtendedLaserScanMsg(const sick::datastructure::Data& data, rclcpp::Time now);

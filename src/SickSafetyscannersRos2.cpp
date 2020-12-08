@@ -27,7 +27,7 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
     this->create_publisher<sick_safetyscanners2_interfaces::msg::ExtendedLaserScan>("extended_scan",
                                                                                     1);
   m_output_paths_publisher =
-    this->create_publisher<sick_safetyscanners2_interfaces::msg::OutputPathsMsg>("output_paths", 1);
+    this->create_publisher<sick_safetyscanners2_interfaces::msg::OutputPaths>("output_paths", 1);
 
   m_field_data_service = this->create_service<sick_safetyscanners2_interfaces::srv::FieldData>(
     "field_data",

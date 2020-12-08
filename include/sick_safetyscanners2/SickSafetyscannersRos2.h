@@ -3,7 +3,7 @@
 #include <sick_safetyscanners_base/datastructure/Data.h>
 
 #include <sick_safetyscanners2_interfaces/msg/extended_laser_scan.hpp>
-#include <sick_safetyscanners2_interfaces/msg/output_paths_msg.hpp>
+#include <sick_safetyscanners2_interfaces/msg/output_paths.hpp>
 #include <sick_safetyscanners2_interfaces/srv/field_data.hpp>
 
 #include <sick_safetyscanners2/utils/Conversions.h>
@@ -28,7 +28,7 @@ private:
   rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr m_laser_scan_publisher;
   rclcpp::Publisher<sick_safetyscanners2_interfaces::msg::ExtendedLaserScan>::SharedPtr
     m_extended_laser_scan_publisher;
-  rclcpp::Publisher<sick_safetyscanners2_interfaces::msg::OutputPathsMsg>::SharedPtr
+  rclcpp::Publisher<sick_safetyscanners2_interfaces::msg::OutputPaths>::SharedPtr
     m_output_paths_publisher;
   rclcpp::Service<sick_safetyscanners2_interfaces::srv::FieldData>::SharedPtr m_field_data_service;
 

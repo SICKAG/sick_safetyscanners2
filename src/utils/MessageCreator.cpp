@@ -77,10 +77,10 @@ MessageCreator::createLaserScanMsg(const sick::datastructure::Data& data, rclcpp
   return scan;
 }
 
-sick_safetyscanners2_interfaces::msg::OutputPathsMsg
+sick_safetyscanners2_interfaces::msg::OutputPaths
 MessageCreator::createOutputPathsMsg(const sick::datastructure::Data& data)
 {
-  sick_safetyscanners2_interfaces::msg::OutputPathsMsg msg;
+  sick_safetyscanners2_interfaces::msg::OutputPaths msg;
 
   std::shared_ptr<sick::datastructure::ApplicationData> app_data = data.getApplicationDataPtr();
   sick::datastructure::ApplicationOutputs outputs                = app_data->getOutputs();
