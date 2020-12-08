@@ -165,6 +165,16 @@ MessageCreator::getMedianReflectors(const std::vector<sick::datastructure::ScanP
 sick_safetyscanners2_interfaces::msg::RawMicroScanData
 MessageCreator::createRawDataMsg(const sick::datastructure::Data& data)
 {
+  sick_safetyscanners2_interfaces::msg::RawMicroScanData msg;
+
+  msg.header               = createDataHeaderMsg(data);
+  msg.derived_values       = createDerivedValuesMsg(data);
+  msg.general_system_state = createGeneralSystemStateMsg(data);
+  msg.measurement_data     = createMeasurementDataMsg(data);
+  msg.intrusion_data       = createIntrusionDataMsg(data);
+  msg.application_data     = createApplicationDataMsg(data);
+
+  return msg;
 }
 
 
