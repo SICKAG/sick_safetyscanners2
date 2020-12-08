@@ -21,7 +21,7 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
   // TODO reconfigure?
   // TODO diagnostics
 
-  // TODO further publishers
+  // init publishers and services
   m_laser_scan_publisher = this->create_publisher<sensor_msgs::msg::LaserScan>("scan", 1);
   m_extended_laser_scan_publisher =
     this->create_publisher<sick_safetyscanners2_interfaces::msg::ExtendedLaserScan>("extended_scan",
@@ -47,6 +47,7 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
 
   RCLCPP_INFO(this->get_logger(), "Communication to Sensor set up");
 
+  // Read sensor specific configurations
   readTypeCodeSettings();
 
   if (m_use_pers_conf)
