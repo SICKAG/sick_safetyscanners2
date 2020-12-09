@@ -125,7 +125,8 @@ private:
   double m_min_intensities = 0.0; /*!< min intensities for laser points */
 
   // Calculation to get the median point of a reflector
-  std::vector<bool> getMedianReflectors(const std::vector<sick::datastructure::ScanPoint> scan_points);
+  std::vector<bool>
+  getMedianReflectors(const std::vector<sick::datastructure::ScanPoint> scan_points);
 
   // private helper functions to create the parts of the  messages
   sick_safetyscanners2_interfaces::msg::DataHeader
