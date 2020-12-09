@@ -3,8 +3,8 @@
 // -- BEGIN LICENSE BLOCK ----------------------------------------------
 
 /*!
-*  Copyright (C) 2018, SICK AG, Waldkirch
-*  Copyright (C) 2018, FZI Forschungszentrum Informatik, Karlsruhe, Germany
+*  Copyright (C) 2020, SICK AG, Waldkirch
+*  Copyright (C) 2020, FZI Forschungszentrum Informatik, Karlsruhe, Germany
 *
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,10 +25,10 @@
 
 //----------------------------------------------------------------------
 /*!
- * \file SickSafetyscannersRos.h
+ * \file Conversions.h
  *
  * \author  Lennart Puck <puck@fzi.de>
- * \date    2018-09-24
+ * \date    2020-12-09
  */
 //----------------------------------------------------------------------
 
@@ -38,6 +38,16 @@
 #include <sick_safetyscanners_base/Types.h>
 
 namespace sick {
+
+/*!
+ * \brief Converts a boolean to a string containing true or false.
+ * \param x boolean to convert to a string
+ * \returns A string containing true or false.
+ */
+inline std::string btoa(bool x)
+{
+  return ((x) ? "true" : "false");
+}
 
 /*!
  * \brief Converts degrees to radians.
@@ -71,10 +81,6 @@ inline uint16_t skipToPublishFrequency(int skip)
   return skip + 1;
 }
 
-inline std::string btoa(bool x)
-{
-  return ((x) ? "true" : "false");
-}
 
 } // End namespace sick
 #endif // SICK_SAFETYSCANNERS2_UTILS_CONVERSIONS_H
