@@ -74,6 +74,9 @@ private:
   // Services
   rclcpp::Service<sick_safetyscanners2_interfaces::srv::FieldData>::SharedPtr m_field_data_service;
 
+  rclcpp::AsyncParametersClient::SharedPtr m_parameters_client;
+  rclcpp::Subscription<rcl_interfaces::msg::ParameterEvent>::SharedPtr m_parameter_event_sub;
+
   // Device and Communication
   std::unique_ptr<sick::AsyncSickSafetyScanner> m_device;
   sick::datastructure::CommSettings m_communications_settings;
@@ -102,6 +105,7 @@ private:
   // Methods for ROS2 parameter handling
   void initialize_parameters();
   void load_parameters();
+  void onParameterEventCallback(const rcl_interfaces::msg::ParameterEvent::SharedPtr event);
 
   // Callback function passed to the device for handling the received packages
   void receiveUDPPaket(const sick::datastructure::Data& data);

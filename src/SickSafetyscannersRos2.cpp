@@ -51,6 +51,10 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
   load_parameters();
   sick::types::port_t tcp_port{2122};
 
+  // Dynamic Parameter Change client
+  m_parameters_client   = std::make_shared<rclcpp::AsyncParametersClient>(this);
+  m_parameter_event_sub = m_parameters_client->on_parameter_event(
+    std::bind(&SickSafetyscannersRos2::onParameterEventCallback, this, std::placeholders::_1));
   // TODO reconfigure?
   // TODO diagnostics
 
@@ -230,6 +234,30 @@ void SickSafetyscannersRos2::load_parameters()
   RCLCPP_INFO(node_logger, "min_intensities: %f", m_min_intensities);
 }
 
+void SickSafetyscannersRos2::onParameterEventCallback(
+  const rcl_interfaces::msg::ParameterEvent::SharedPtr event)
+{
+  // TODO(wjwwood): The message should have an operator<<, which would replace all of this.
+  std::stringstream ss;
+  ss << "\nParameter event:\n new parameters:";
+  for (auto& new_parameter : event->new_parameters)
+  {
+    ss << "\n  " << new_parameter.name;
+  }
+  ss << "\n changed parameters:";
+  for (auto& changed_parameter : event->changed_parameters)
+  {
+    ss << "\n  " << changed_parameter.name;
+  }
+  ss << "\n deleted parameters:";
+  for (auto& deleted_parameter : event->deleted_parameters)
+  {
+    ss << "\n  " << deleted_parameter.name;
+  }
+  ss << "\n";
+  RCLCPP_INFO(this->get_logger(), ss.str().c_str());
+}
+
 void SickSafetyscannersRos2::receiveUDPPaket(const sick::datastructure::Data& data)
 {
   if (!data.getMeasurementDataPtr()->isEmpty() && !data.getDerivedValuesPtr()->isEmpty())
@@ -255,7 +283,7 @@ bool SickSafetyscannersRos2::getFieldData(
   const std::shared_ptr<sick_safetyscanners2_interfaces::srv::FieldData::Request> request,
   std::shared_ptr<sick_safetyscanners2_interfaces::srv::FieldData::Response> response)
 {
-  //Suppress warning of unused request variable due to empty request fields
+  // Suppress warning of unused request variable due to empty request fields
   (void)request;
 
   std::vector<sick::datastructure::FieldData> fields;
