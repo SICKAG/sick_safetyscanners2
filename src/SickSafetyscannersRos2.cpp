@@ -256,6 +256,13 @@ void SickSafetyscannersRos2::onParameterEventCallback(
   }
   ss << "\n";
   RCLCPP_INFO(this->get_logger(), ss.str().c_str());
+
+  load_parameters();
+  m_device->changeSensorSettings(m_communications_settings);
+  m_msg_creator = std::make_unique<sick::MessageCreator>(
+    m_frame_id, m_time_offset, m_range_min, m_range_max, m_angle_offset, m_min_intensities);
+
+  RCLCPP_INFO(this->get_logger(), "Updated sensor settings");
 }
 
 void SickSafetyscannersRos2::receiveUDPPaket(const sick::datastructure::Data& data)
