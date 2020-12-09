@@ -35,9 +35,9 @@
 #ifndef SICK_SAFETYSCANNERS2_SICKSAFETYSCANNERSROS2_H
 #define SICK_SAFETYSCANNERS2_SICKSAFETYSCANNERSROS2_H
 
+#include <sick_safetyscanners_base/datastructure/Data.h>
 #include <sick_safetyscanners_base/SickSafetyscanners.h>
 #include <sick_safetyscanners_base/Types.h>
-#include <sick_safetyscanners_base/datastructure/Data.h>
 
 #include <sick_safetyscanners2_interfaces/msg/extended_laser_scan.hpp>
 #include <sick_safetyscanners2_interfaces/msg/output_paths.hpp>
@@ -46,36 +46,42 @@
 #include <sick_safetyscanners2/utils/Conversions.h>
 #include <sick_safetyscanners2/utils/MessageCreator.h>
 
-#include <sensor_msgs/msg/laser_scan.hpp>
-
 #include <rclcpp/rclcpp.hpp>
-#include <std_msgs/msg/string.hpp>
+#include <sensor_msgs/msg/laser_scan.hpp>
 
 namespace sick {
 
 class SickSafetyscannersRos2 : public rclcpp::Node
 {
 public:
+  
+  /*!
+   * \brief Constructor of the ROS2 Node handling the Communication of the Sick Safetyscanner
+   */
   SickSafetyscannersRos2();
 
 private:
-  void receiveUDPPaket(const sick::datastructure::Data& data);
-
-  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
-  rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr m_laser_scan_publisher;
+ 
+  // Publishers
   rclcpp::Publisher<sick_safetyscanners2_interfaces::msg::ExtendedLaserScan>::SharedPtr
     m_extended_laser_scan_publisher;
+  rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr m_laser_scan_publisher;
   rclcpp::Publisher<sick_safetyscanners2_interfaces::msg::OutputPaths>::SharedPtr
     m_output_paths_publisher;
   rclcpp::Publisher<sick_safetyscanners2_interfaces::msg::RawMicroScanData>::SharedPtr
     m_raw_data_publisher;
+
+  //Services
   rclcpp::Service<sick_safetyscanners2_interfaces::srv::FieldData>::SharedPtr m_field_data_service;
 
+  // Device and Communication
   std::unique_ptr<sick::AsyncSickSafetyScanner> m_device;
   sick::datastructure::CommSettings m_communications_settings;
 
+  // Helper for Message Generation
   std::unique_ptr<sick::MessageCreator> m_msg_creator;
 
+  // General Variables 
   boost::asio::ip::address_v4 m_sensor_ip;
   std::string m_frame_id;
   double m_time_offset;
@@ -86,28 +92,27 @@ private:
   double m_timestamp_min_acceptable = -1.0;
   double m_timestamp_max_acceptable = 1.0;
   double m_min_intensities          = 0.0; /*!< min intensities for laser points */
-
   bool m_use_sick_angles;
   float m_angle_offset;
   bool m_use_pers_conf;
 
-  // diagnostics?
+  // TODO diagnostics?
+  // TODO dynamic reconfigure?
 
-
-  // dynamic reconfigure?
-
+  // Methods for ROS2 parameter handling
   void initialize_parameters();
   void load_parameters();
 
+  // Callback function passed to the device for handling the received packages
+  void receiveUDPPaket(const sick::datastructure::Data& data);
 
-  // bool getFieldData();
+  //Methods Triggering COLA2 calls towards the sensor
   bool getFieldData(
     const std::shared_ptr<sick_safetyscanners2_interfaces::srv::FieldData::Request> request,
     std::shared_ptr<sick_safetyscanners2_interfaces::srv::FieldData::Response> response);
-  void readTypeCodeSettings();
   void readPersistentConfig();
+  void readTypeCodeSettings();
 
-  // void getMedianReflectors(const sick::datastructure::Data);
 };
 } // namespace sick
 
