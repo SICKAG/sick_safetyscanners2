@@ -35,47 +35,97 @@
 #ifndef SICK_SAFETYSCANNERS2_UTILS_MESSAGECREATOR_H
 #define SICK_SAFETYSCANNERS2_UTILS_MESSAGECREATOR_H
 
-#include <rclcpp/rclcpp.hpp>
-#include <sensor_msgs/msg/laser_scan.hpp>
-#include <sick_safetyscanners2/utils/Conversions.h>
+#include <sick_safetyscanners_base/Types.h>
+#include <sick_safetyscanners_base/datastructure/Data.h>
+
 #include <sick_safetyscanners2_interfaces/msg/extended_laser_scan.hpp>
 #include <sick_safetyscanners2_interfaces/msg/output_paths.hpp>
 #include <sick_safetyscanners2_interfaces/msg/raw_micro_scan_data.hpp>
-#include <sick_safetyscanners_base/Types.h>
-#include <sick_safetyscanners_base/datastructure/Data.h>
+
+#include <sick_safetyscanners2/utils/Conversions.h>
+
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/laser_scan.hpp>
 
 namespace sick {
 
 class MessageCreator
 {
 public:
+  /*!
+   * \brief Constructor of the Message helper class.
+   *
+   * \param frame_id The frame_id used for the laser scan
+   * \param time_offset Time offset to add to the timestamp due to timing issues
+   * \param range_min The minimum range for the sensor
+   * \param range_max The maximum range for the sensor
+   * \param angle_offset The offset added to the angle
+   * \param min_intensities Threshold to filter too low intensities
+   */
   MessageCreator(std::string frame_id,
                  double time_offset,
                  double range_min,
                  double range_max,
-                 float angle_offset,
+                 float angle_offset, // TODO still needed?
                  double min_intensities);
 
 
+  /*!
+   * \brief Creates a Laserscan message from the parsed data.
+   *
+   * \param data The parsed data from the sensor
+   * \param now The current timestamp to give the message
+   *
+   * \returns The constructed LaserScan Message
+   */
   sensor_msgs::msg::LaserScan createLaserScanMsg(const sick::datastructure::Data& data,
                                                  rclcpp::Time now);
+
+
+  /*!
+   * \brief Creates the Output Pats Message from the parsed data.
+   *
+   * \param data The parsed data from the sensor
+   *
+   * \returns The constructed OutputPaths Message
+   */
   sick_safetyscanners2_interfaces::msg::OutputPaths
   createOutputPathsMsg(const sick::datastructure::Data& data);
+
+  /*!
+   * \brief Constructs an extended LaserScan including reflector values from the parsed data.
+   *
+   * \param data The parsed data from the sensor
+   * \param now The current timestamp to give the message
+   *
+   * \returns The constructed extended LaserScan Message
+   */
   sick_safetyscanners2_interfaces::msg::ExtendedLaserScan
   createExtendedLaserScanMsg(const sick::datastructure::Data& data, rclcpp::Time now);
+
+
+  /*!
+   * \brief Constructs a message containing all raw values from the sensor.
+   *
+   * \param data The parsed data from the sensor
+   *
+   * \returns The raw values of the sensor in a ROS2 Message.
+   */
   sick_safetyscanners2_interfaces::msg::RawMicroScanData
   createRawDataMsg(const sick::datastructure::Data& data);
 
 private:
-  std::vector<bool>
-  getMedianReflectors(const std::vector<sick::datastructure::ScanPoint> scan_points);
-  std::string m_frame_id;
+  std::vector<bool> std::string m_frame_id;
   double m_time_offset;
   double m_range_min;
   double m_range_max;
   float m_angle_offset;
   double m_min_intensities = 0.0; /*!< min intensities for laser points */
 
+  // Calculation to get the median point of a reflector
+  getMedianReflectors(const std::vector<sick::datastructure::ScanPoint> scan_points);
+
+  // private helper functions to create the parts of the  messages
   sick_safetyscanners2_interfaces::msg::DataHeader
   createDataHeaderMsg(const sick::datastructure::Data& data);
   sick_safetyscanners2_interfaces::msg::DerivedValues

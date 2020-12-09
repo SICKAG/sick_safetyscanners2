@@ -35,9 +35,9 @@
 #ifndef SICK_SAFETYSCANNERS2_SICKSAFETYSCANNERSROS2_H
 #define SICK_SAFETYSCANNERS2_SICKSAFETYSCANNERSROS2_H
 
-#include <sick_safetyscanners_base/datastructure/Data.h>
 #include <sick_safetyscanners_base/SickSafetyscanners.h>
 #include <sick_safetyscanners_base/Types.h>
+#include <sick_safetyscanners_base/datastructure/Data.h>
 
 #include <sick_safetyscanners2_interfaces/msg/extended_laser_scan.hpp>
 #include <sick_safetyscanners2_interfaces/msg/output_paths.hpp>
@@ -54,14 +54,12 @@ namespace sick {
 class SickSafetyscannersRos2 : public rclcpp::Node
 {
 public:
-  
   /*!
    * \brief Constructor of the ROS2 Node handling the Communication of the Sick Safetyscanner
    */
   SickSafetyscannersRos2();
 
 private:
- 
   // Publishers
   rclcpp::Publisher<sick_safetyscanners2_interfaces::msg::ExtendedLaserScan>::SharedPtr
     m_extended_laser_scan_publisher;
@@ -71,7 +69,7 @@ private:
   rclcpp::Publisher<sick_safetyscanners2_interfaces::msg::RawMicroScanData>::SharedPtr
     m_raw_data_publisher;
 
-  //Services
+  // Services
   rclcpp::Service<sick_safetyscanners2_interfaces::srv::FieldData>::SharedPtr m_field_data_service;
 
   // Device and Communication
@@ -81,7 +79,7 @@ private:
   // Helper for Message Generation
   std::unique_ptr<sick::MessageCreator> m_msg_creator;
 
-  // General Variables 
+  // General Variables
   boost::asio::ip::address_v4 m_sensor_ip;
   std::string m_frame_id;
   double m_time_offset;
@@ -106,13 +104,12 @@ private:
   // Callback function passed to the device for handling the received packages
   void receiveUDPPaket(const sick::datastructure::Data& data);
 
-  //Methods Triggering COLA2 calls towards the sensor
+  // Methods Triggering COLA2 calls towards the sensor
   bool getFieldData(
     const std::shared_ptr<sick_safetyscanners2_interfaces::srv::FieldData::Request> request,
     std::shared_ptr<sick_safetyscanners2_interfaces::srv::FieldData::Response> response);
   void readPersistentConfig();
   void readTypeCodeSettings();
-
 };
 } // namespace sick
 
