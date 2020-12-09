@@ -25,7 +25,7 @@
 
 //----------------------------------------------------------------------
 /*!
- * \file SickSafetyscannersRos.h
+ * \file SickSafetyscannersRos.cpp
  *
  * \author  Lennart Puck <puck@fzi.de>
  * \date    2020-12-08
