@@ -255,6 +255,9 @@ bool SickSafetyscannersRos2::getFieldData(
   const std::shared_ptr<sick_safetyscanners2_interfaces::srv::FieldData::Request> request,
   std::shared_ptr<sick_safetyscanners2_interfaces::srv::FieldData::Response> response)
 {
+  //Suppress warning of unused request variable due to empty request fields
+  (void)request;
+
   std::vector<sick::datastructure::FieldData> fields;
   m_device->requestFieldData(fields);
 
