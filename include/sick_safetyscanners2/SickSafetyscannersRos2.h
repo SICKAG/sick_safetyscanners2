@@ -49,6 +49,8 @@
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 
+#include <string>
+
 namespace sick {
 
 class SickSafetyscannersRos2 : public rclcpp::Node

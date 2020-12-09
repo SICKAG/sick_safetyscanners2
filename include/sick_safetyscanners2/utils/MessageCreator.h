@@ -47,6 +47,8 @@
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 
+#include <string>
+
 namespace sick {
 
 class MessageCreator
@@ -115,7 +117,7 @@ public:
   createRawDataMsg(const sick::datastructure::Data& data);
 
 private:
-  std::vector<bool> std::string m_frame_id;
+  std::string m_frame_id;
   double m_time_offset;
   double m_range_min;
   double m_range_max;
@@ -123,7 +125,7 @@ private:
   double m_min_intensities = 0.0; /*!< min intensities for laser points */
 
   // Calculation to get the median point of a reflector
-  getMedianReflectors(const std::vector<sick::datastructure::ScanPoint> scan_points);
+  std::vector<bool> getMedianReflectors(const std::vector<sick::datastructure::ScanPoint> scan_points);
 
   // private helper functions to create the parts of the  messages
   sick_safetyscanners2_interfaces::msg::DataHeader
