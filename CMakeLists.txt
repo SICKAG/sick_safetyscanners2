@@ -17,14 +17,11 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(sick_safetyscanners_base REQUIRED)
 find_package(Boost REQUIRED COMPONENTS chrono)
+find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(sick_safetyscanners_base REQUIRED)
 find_package(sick_safetyscanners2_interfaces REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
 
 set(dependencies
   rclcpp
@@ -48,7 +45,6 @@ target_include_directories(sick_safetyscanners2_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
-#TODO new install directory for launch/ directories
 install(DIRECTORY
 launch
 DESTINATION share/${PROJECT_NAME}/
