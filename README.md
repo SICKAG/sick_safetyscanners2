@@ -2,6 +2,8 @@
 
 A ROS2 Driver which reads the raw data from the SICK Safety Scanners and publishes the data as a laser_scan msg.
 
+The ROS1 Driver can be found here: https://github.com/SICKAG/sick_safetyscanners
+
 ## Table of contents
 
 - [Supported Hardware](#supported-hardware)
@@ -31,11 +33,11 @@ is supported.
 
 ### Dependencies
 
-Currently not as binaries released dependencies:
+Currently not as binaries released.
 * sick_safetyscanners_base
 * sick_safetyscanners2_interfaces
 
-This can be achieved by adding them to the current colcon_ws
+Therefore, they have to be added to the colcon_ws.
 
 ### Installation
 
