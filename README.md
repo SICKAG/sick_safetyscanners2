@@ -31,15 +31,14 @@ is supported.
 * Correctly setup SICK Safety Scanner
 * Connected SICK Safety Scanner and a correctly setup ethernet network. Both the host and the sensor have to be in the same network.
 
-### Dependencies
-
-Currently not as binaries released.
-* sick_safetyscanners_base
-* sick_safetyscanners2_interfaces
-
-Therefore, they have to be added to the colcon_ws.
-
 ### Installation
+
+#### Dependencies
+
+Binary release is in progress. Currently they have to be in the colcon_ws.
+
+* sick_safetyscanners_base (https://github.com/SICKAG/sick_safetyscanners_base)
+* sick_safetyscanners2_interfaces (https://github.com/SICKAG/sick_safetyscanners2_interfaces)
 
 
 #### From Source
