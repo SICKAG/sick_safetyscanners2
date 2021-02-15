@@ -52,9 +52,9 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
   sick::types::port_t tcp_port{2122};
 
   // Dynamic Parameter Change client
-  m_parameters_client   = std::make_shared<rclcpp::AsyncParametersClient>(this);
-  m_parameter_event_sub = m_parameters_client->on_parameter_event(
-    std::bind(&SickSafetyscannersRos2::onParameterEventCallback, this, std::placeholders::_1));
+  m_param_callback = add_on_set_parameters_callback(
+    std::bind(&SickSafetyscannersRos2::parametersCallback, this, std::placeholders::_1));
+
   // TODO reconfigure?
   // TODO diagnostics
 
@@ -147,7 +147,7 @@ void SickSafetyscannersRos2::load_parameters()
   this->get_parameter<std::string>("frame_id", m_frame_id);
   RCLCPP_INFO(node_logger, "frame_id: %s", m_frame_id.c_str());
 
-  std::string sensor_ip; // TODO
+  std::string sensor_ip;
   this->get_parameter<std::string>("sensor_ip", sensor_ip);
   RCLCPP_INFO(node_logger, "sensor_ip: %s", sensor_ip.c_str());
   m_sensor_ip = boost::asio::ip::address_v4::from_string(sensor_ip);
@@ -234,36 +234,145 @@ void SickSafetyscannersRos2::load_parameters()
   RCLCPP_INFO(node_logger, "min_intensities: %f", m_min_intensities);
 }
 
-void SickSafetyscannersRos2::onParameterEventCallback(
-  const rcl_interfaces::msg::ParameterEvent::SharedPtr event)
+rcl_interfaces::msg::SetParametersResult
+SickSafetyscannersRos2::parametersCallback(std::vector<rclcpp::Parameter> parameters)
 {
-  // TODO(wjwwood): The message should have an operator<<, which would replace all of this.
-  std::stringstream ss;
-  ss << "\nParameter event:\n new parameters:";
-  for (auto& new_parameter : event->new_parameters)
-  {
-    ss << "\n  " << new_parameter.name;
-  }
-  ss << "\n changed parameters:";
-  for (auto& changed_parameter : event->changed_parameters)
-  {
-    ss << "\n  " << changed_parameter.name;
-  }
-  ss << "\n deleted parameters:";
-  for (auto& deleted_parameter : event->deleted_parameters)
-  {
-    ss << "\n  " << deleted_parameter.name;
-  }
-  ss << "\n";
-  RCLCPP_INFO(this->get_logger(), ss.str().c_str());
+  rcl_interfaces::msg::SetParametersResult result;
+  result.successful         = true;
+  result.reason             = "";
+  bool update_sensor_config = false;
 
-  load_parameters();
-  m_device->changeSensorSettings(m_communications_settings);
+  for (auto param : parameters)
+  {
+    {
+      std::stringstream ss;
+      ss << "{" << param.get_name() << ", " << param.value_to_string() << "}";
+      RCLCPP_INFO(this->get_logger(), "Got parameter: '%s'", ss.str().c_str());
+
+      if (!param.get_name().compare("frame_id"))
+      {
+        m_frame_id = param.value_to_string();
+      }
+      else if (!param.get_name().compare("host_ip"))
+      {
+        m_communications_settings.host_ip =
+          boost::asio::ip::address_v4::from_string(param.value_to_string());
+        update_sensor_config = true;
+      }
+      else if (!param.get_name().compare("host_udp_port"))
+      {
+        m_communications_settings.host_udp_port = param.as_int();
+        update_sensor_config                    = true;
+      }
+      else if (!param.get_name().compare("channel"))
+      {
+        m_communications_settings.channel = param.as_int();
+        update_sensor_config              = true;
+      }
+      else if (!param.get_name().compare("channel_enabled"))
+      {
+        m_communications_settings.enabled = param.as_bool();
+        update_sensor_config              = true;
+      }
+      else if (!param.get_name().compare("skip"))
+      {
+        m_communications_settings.publishing_frequency = skipToPublishFrequency(param.as_int());
+        update_sensor_config                           = true;
+      }
+      else if (!param.get_name().compare("angle_start"))
+      {
+        // TODO cleanup
+        double angle_start = param.as_double();
+        double angle_end;
+        this->get_parameter<double>("angle_end", angle_end);
+        if (angle_start == angle_end)
+        {
+          m_communications_settings.start_angle = sick::radToDeg(0);
+          m_communications_settings.end_angle   = sick::radToDeg(0);
+        }
+        else
+        {
+          m_communications_settings.start_angle = sick::radToDeg(angle_start) - m_angle_offset;
+          m_communications_settings.end_angle   = sick::radToDeg(angle_end) - m_angle_offset;
+        }
+        update_sensor_config = true;
+      }
+      else if (!param.get_name().compare("angle_end"))
+      {
+        // TODO cleanup
+        double angle_end = param.as_double();
+        double angle_start;
+        this->get_parameter<double>("angle_start", angle_start);
+        if (angle_start == angle_end)
+        {
+          m_communications_settings.start_angle = sick::radToDeg(0);
+          m_communications_settings.end_angle   = sick::radToDeg(0);
+        }
+        else
+        {
+          m_communications_settings.start_angle = sick::radToDeg(angle_start) - m_angle_offset;
+          m_communications_settings.end_angle   = sick::radToDeg(angle_end) - m_angle_offset;
+        }
+        update_sensor_config = true;
+      }
+      else if (!param.get_name().compare("time_offset"))
+      {
+        m_time_offset = param.as_double();
+      }
+      else if (!param.get_name().compare("general_system_state"))
+      {
+        // TODO improve
+        m_communications_settings.features =
+          (m_communications_settings.features & ~(1UL << 0)) | (param.as_bool() << 0);
+        update_sensor_config = true;
+      }
+      else if (!param.get_name().compare("derived_settings"))
+      {
+        m_communications_settings.features =
+          (m_communications_settings.features & ~(1UL << 1)) | (param.as_bool() << 1);
+        update_sensor_config = true;
+      }
+      else if (!param.get_name().compare("measurement_data"))
+      {
+        m_communications_settings.features =
+          (m_communications_settings.features & ~(1UL << 2)) | (param.as_bool() << 2);
+        update_sensor_config = true;
+      }
+      else if (!param.get_name().compare("intrusion_data"))
+      {
+        m_communications_settings.features =
+          (m_communications_settings.features & ~(1UL << 3)) | (param.as_bool() << 3);
+        update_sensor_config = true;
+      }
+      else if (!param.get_name().compare("application_io_data"))
+      {
+        m_communications_settings.features =
+          (m_communications_settings.features & ~(1UL << 4)) | (param.as_bool() << 4);
+        update_sensor_config = true;
+      }
+      else if (!param.get_name().compare("min_intensities"))
+      {
+        m_min_intensities = param.as_double();
+      }
+      else
+      {
+        result.successful = false;
+        result.reason     = "Parameter is not dynamic reconfigurable";
+        RCLCPP_WARN(this->get_logger(),
+                    "Parameter %s not dynamically reconfigurable",
+                    param.get_name().c_str());
+      }
+    }
+  }
+  if (update_sensor_config)
+  {
+    m_device->changeSensorSettings(m_communications_settings);
+  }
   m_msg_creator = std::make_unique<sick::MessageCreator>(
     m_frame_id, m_time_offset, m_range_min, m_range_max, m_angle_offset, m_min_intensities);
-
-  RCLCPP_INFO(this->get_logger(), "Updated sensor settings");
+  return result;
 }
+
 
 void SickSafetyscannersRos2::receiveUDPPaket(const sick::datastructure::Data& data)
 {

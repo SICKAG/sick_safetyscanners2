@@ -74,8 +74,11 @@ private:
   // Services
   rclcpp::Service<sick_safetyscanners2_interfaces::srv::FieldData>::SharedPtr m_field_data_service;
 
-  rclcpp::AsyncParametersClient::SharedPtr m_parameters_client;
-  rclcpp::Subscription<rcl_interfaces::msg::ParameterEvent>::SharedPtr m_parameter_event_sub;
+  // Parameters
+  OnSetParametersCallbackHandle::SharedPtr m_param_callback;
+  rcl_interfaces::msg::SetParametersResult
+  parametersCallback(std::vector<rclcpp::Parameter> parameters);
+
 
   // Device and Communication
   std::unique_ptr<sick::AsyncSickSafetyScanner> m_device;
