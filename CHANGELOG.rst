@@ -2,8 +2,8 @@
 Changelog for package sick_safetyscanners2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.2 (2021-03-15)
+------------------
 * added missing dependencies to package xml
 * Contributors: Lennart Puck
 
