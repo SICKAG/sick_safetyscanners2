@@ -25,7 +25,7 @@ def generate_launch_description():
                  "measurement_data": True,
                  "intrusion_data": True,
                  "application_io_data": True,
-                 "use_persistend_config": True,
+                 "use_persistent_config": True,
                  "min_intensities": 0.0}
             ]
         )
