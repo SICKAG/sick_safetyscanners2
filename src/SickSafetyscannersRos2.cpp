@@ -90,11 +90,11 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
   if (m_use_pers_conf)
   {
     readPersistentConfig();
-    m_device->changeSensorSettings(m_communications_settings);
   }
 
   // Start async receiving and processing of sensor data
   m_device->run();
+  m_device->changeSensorSettings(m_communications_settings);
   m_msg_creator = std::make_unique<sick::MessageCreator>(
     m_frame_id, m_time_offset, m_range_min, m_range_max, m_angle_offset, m_min_intensities);
   RCLCPP_INFO(this->get_logger(), "Node Configured and running");
