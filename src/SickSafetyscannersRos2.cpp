@@ -79,8 +79,16 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
 
 
   // Create a sensor instance
-  m_device = std::make_unique<sick::AsyncSickSafetyScanner>(
-    m_sensor_ip, tcp_port, m_communications_settings, callback);
+  if (m_communications_settings.host_ip.is_multicast())
+  {
+    m_device = std::make_unique<sick::AsyncSickSafetyScanner>(
+      m_sensor_ip, tcp_port, m_communications_settings, m_interface_ip, callback);
+  }
+  else
+  {
+    m_device = std::make_unique<sick::AsyncSickSafetyScanner>(
+      m_sensor_ip, tcp_port, m_communications_settings, callback);
+  }
 
   RCLCPP_INFO(this->get_logger(), "Communication to Sensor set up");
 
@@ -124,6 +132,7 @@ void SickSafetyscannersRos2::initialize_parameters()
   this->declare_parameter<std::string>("frame_id", "scan");
   this->declare_parameter<std::string>("sensor_ip", "192.168.1.11");
   this->declare_parameter<std::string>("host_ip", "192.168.1.9");
+  this->declare_parameter<std::string>("interface_ip", "0.0.0.0");
   this->declare_parameter<int>("host_udp_port", 0);
   this->declare_parameter<int>("channel", 0);
   this->declare_parameter<bool>("channel_enabled", true);
@@ -151,6 +160,11 @@ void SickSafetyscannersRos2::load_parameters()
   this->get_parameter<std::string>("sensor_ip", sensor_ip);
   RCLCPP_INFO(node_logger, "sensor_ip: %s", sensor_ip.c_str());
   m_sensor_ip = boost::asio::ip::address_v4::from_string(sensor_ip);
+
+  std::string interface_ip;
+  this->get_parameter<std::string>("interface_ip", interface_ip);
+  RCLCPP_INFO(node_logger, "interface_ip: %s", interface_ip.c_str());
+  m_interface_ip = boost::asio::ip::address_v4::from_string(interface_ip);
 
   std::string host_ip;
   this->get_parameter<std::string>("host_ip", host_ip);

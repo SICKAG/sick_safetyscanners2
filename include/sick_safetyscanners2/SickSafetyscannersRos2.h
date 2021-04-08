@@ -89,6 +89,7 @@ private:
 
   // General Variables
   boost::asio::ip::address_v4 m_sensor_ip;
+  boost::asio::ip::address_v4 m_interface_ip;
   std::string m_frame_id;
   double m_time_offset;
   double m_range_min;
