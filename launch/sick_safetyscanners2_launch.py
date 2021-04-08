@@ -13,6 +13,7 @@ def generate_launch_description():
                 {"frame_id": "scan",
                  "sensor_ip": "192.168.1.11",
                  "host_ip": "192.168.1.9",
+                 "interface_ip": "0.0.0.0",
                  "host_udp_port": 0,
                  "channel": 0,
                  "channel_enabled": True,
