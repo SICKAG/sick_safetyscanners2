@@ -12,6 +12,7 @@
   
   <depend>boost</depend>
   <depend>rclcpp</depend>
+  <depend>rclcpp_lifecycle</depend>
   <depend>sensor_msgs</depend>
   <depend>sick_safetyscanners_base</depend>
   <depend>sick_safetyscanners2_interfaces</depend>

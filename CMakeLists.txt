@@ -19,12 +19,16 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(Boost REQUIRED COMPONENTS chrono)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
+find_package(lifecycle_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(sick_safetyscanners_base REQUIRED)
 find_package(sick_safetyscanners2_interfaces REQUIRED)
 
 set(dependencies
   rclcpp
+  rclcpp_lifecycle 
+  lifecycle_msgs 
   sensor_msgs
   sick_safetyscanners_base
   sick_safetyscanners2_interfaces
@@ -45,12 +49,31 @@ target_include_directories(sick_safetyscanners2_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
+  add_executable(sick_safetyscanners2_lifecycle_node 
+  src/sick_safetyscanners2_lifecycle_node.cpp
+  src/SickSafetyscannersLifeCycle.cpp
+  src/utils/MessageCreator.cpp)
+
+target_link_libraries(sick_safetyscanners2_lifecycle_node 
+  sick_safetyscanners_base::sick_safetyscanners_base
+  ${Boost_LIBRARIES})
+
+ament_target_dependencies(sick_safetyscanners2_lifecycle_node ${dependencies})
+
+target_include_directories(sick_safetyscanners2_lifecycle_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+
 install(DIRECTORY
 launch
 DESTINATION share/${PROJECT_NAME}/
 )
 
 install(TARGETS sick_safetyscanners2_node
+  EXPORT export_${PROJECT_NAME}
+  DESTINATION lib/${PROJECT_NAME})
+
+install(TARGETS sick_safetyscanners2_lifecycle_node
   EXPORT export_${PROJECT_NAME}
   DESTINATION lib/${PROJECT_NAME})
 
