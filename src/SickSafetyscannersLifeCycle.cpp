@@ -106,12 +106,7 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn SickSa
     readPersistentConfig();
   }
 
-  // Start async receiving and processing of sensor data
-  m_device->run();
-  m_device->changeSensorSettings(m_communications_settings);
-  m_msg_creator = std::make_unique<sick::MessageCreator>(
-    m_frame_id, m_time_offset, m_range_min, m_range_max, m_angle_offset, m_min_intensities);
-  RCLCPP_INFO(this->get_logger(), "Node Configured and running"); 
+  RCLCPP_INFO(this->get_logger(), "Node Configured"); 
 
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
@@ -119,20 +114,30 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn SickSa
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn SickSafetyscannersLifeCycle::on_activate(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_activate()...");
+  // Start async receiving and processing of sensor data
+  m_device->run();
+  m_device->changeSensorSettings(m_communications_settings);
+  m_msg_creator = std::make_unique<sick::MessageCreator>(
+    m_frame_id, m_time_offset, m_range_min, m_range_max, m_angle_offset, m_min_intensities);
   m_laser_scan_publisher->on_activate();
   m_extended_laser_scan_publisher->on_activate();
   m_output_paths_publisher->on_activate();
   m_raw_data_publisher->on_activate();
+
+  RCLCPP_INFO(this->get_logger(), "Node activated, device is running...");
 
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn SickSafetyscannersLifeCycle::on_deactivate(const rclcpp_lifecycle::State &)
 {
   RCLCPP_INFO(this->get_logger(), "on_deactivate()...");
+  m_device->stop();
   m_laser_scan_publisher->on_deactivate();
   m_extended_laser_scan_publisher->on_deactivate();
   m_output_paths_publisher->on_deactivate();
   m_raw_data_publisher->on_deactivate();
+
+  RCLCPP_INFO(this->get_logger(), "Node deactivated, device stopped...");
 
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
