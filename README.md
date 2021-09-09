@@ -35,8 +35,13 @@ is supported.
 
 #### Dependencies
 
-Binary release is in progress. Currently they have to be in the colcon_ws.
+Dependencies can be installed via 
+```
+sudo apt-get install ros-<rosdistro>-sick-safetyscanners2-interfaces
+sudo apt-get install ros-<rosdistro>-sick-safetyscanners-base
+```
 
+The sources can be found here:
 * sick_safetyscanners_base (https://github.com/SICKAG/sick_safetyscanners_base)
 * sick_safetyscanners2_interfaces (https://github.com/SICKAG/sick_safetyscanners2_interfaces)
 
@@ -55,6 +60,8 @@ source ~/colcon_ws/install/setup.sh
 
 ### Starting
 
+#### Classic Node
+
 To start the driver the launch file has to be started. For the driver to work correctly, the sensor ip and host ip have to be defined. These parameters can be passed to the sensor as arguments via launch file.
 
 ```
@@ -62,6 +69,28 @@ ros2 launch sick_safetyscanners2 sick_safetyscanners2_launch.py
 ```
 
 This will start the driver with the in launch file defined parameters.
+
+#### Lifecycle Node
+
+To start the driver within a lifecycle the launch file has to be started. For the driver to work correctly, the sensor ip and host ip have to be defined. These parameters can be passed to the sensor as arguments via launch file.
+
+```
+ros2 launch sick_safetyscanners2 sick_safetyscanners2_lifecycle_launch.py
+```
+
+This will start the driver with the in launch file defined parameters.
+
+To configure and activate the lifecycle node the following commands have to be issued:
+```
+// Configure
+ros2 lifecycle set /sick_safetyscanners2_lifecycle_node configure
+
+//Activate
+ros2 lifecycle set /sick_safetyscanners2_lifecycle_node activate
+```
+
+
+#### Visualization
 
 To visualize the data start rviz2 and subscribe to the ~/scan topic.
 By default the frame_id is "scan" however this can be customized in the launch file
