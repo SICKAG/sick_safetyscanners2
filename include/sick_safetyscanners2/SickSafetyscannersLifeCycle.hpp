@@ -46,8 +46,8 @@
 #include <sick_safetyscanners2/utils/Conversions.h>
 #include <sick_safetyscanners2/utils/MessageCreator.h>
 
-#include <lifecycle_msgs/msg/transition.hpp>
 #include <lifecycle_msgs/msg/state.hpp>
+#include <lifecycle_msgs/msg/transition.hpp>
 #include <lifecycle_msgs/srv/change_state.hpp>
 #include <lifecycle_msgs/srv/get_state.hpp>
 #include <rclcpp_lifecycle/lifecycle_node.hpp>
@@ -67,23 +67,30 @@ public:
    * \brief Constructor of the ROS2 Node handling the Communication of the Sick Safetyscanner
    */
 
-  explicit SickSafetyscannersLifeCycle (const std::string & node_name, bool intra_process_comms = false);
+  explicit SickSafetyscannersLifeCycle(const std::string& node_name,
+                                       bool intra_process_comms = false);
 
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_configure (const rclcpp_lifecycle::State &);
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_activate (const rclcpp_lifecycle::State &);
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_deactivate (const rclcpp_lifecycle::State &);
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_cleanup (const rclcpp_lifecycle::State &);
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_shutdown (const rclcpp_lifecycle::State &);
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+  on_configure(const rclcpp_lifecycle::State&);
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+  on_activate(const rclcpp_lifecycle::State&);
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+  on_deactivate(const rclcpp_lifecycle::State&);
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+  on_cleanup(const rclcpp_lifecycle::State&);
+  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
+  on_shutdown(const rclcpp_lifecycle::State&);
 
 private:
   // Publishers
-  rclcpp_lifecycle::LifecyclePublisher<sick_safetyscanners2_interfaces::msg::ExtendedLaserScan>::SharedPtr
-    m_extended_laser_scan_publisher;
-  rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::LaserScan>::SharedPtr m_laser_scan_publisher;
+  rclcpp_lifecycle::LifecyclePublisher<sick_safetyscanners2_interfaces::msg::ExtendedLaserScan>::
+    SharedPtr m_extended_laser_scan_publisher;
+  rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::LaserScan>::SharedPtr
+    m_laser_scan_publisher;
   rclcpp_lifecycle::LifecyclePublisher<sick_safetyscanners2_interfaces::msg::OutputPaths>::SharedPtr
     m_output_paths_publisher;
-  rclcpp_lifecycle::LifecyclePublisher<sick_safetyscanners2_interfaces::msg::RawMicroScanData>::SharedPtr
-    m_raw_data_publisher;
+  rclcpp_lifecycle::LifecyclePublisher<
+    sick_safetyscanners2_interfaces::msg::RawMicroScanData>::SharedPtr m_raw_data_publisher;
 
   // Services
   rclcpp::Service<sick_safetyscanners2_interfaces::srv::FieldData>::SharedPtr m_field_data_service;

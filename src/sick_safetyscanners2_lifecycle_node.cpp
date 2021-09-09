@@ -49,7 +49,7 @@ int main(int argc, char** argv)
   rclcpp::init(argc, argv);
   rclcpp::executors::SingleThreadedExecutor exe;
   std::shared_ptr<sick::SickSafetyscannersLifeCycle> nh_ =
-  std::make_shared<sick::SickSafetyscannersLifeCycle>("SickSafetyscannersLifecycle");
+    std::make_shared<sick::SickSafetyscannersLifeCycle>("SickSafetyscannersLifecycle");
 
   exe.add_node(nh_->get_node_base_interface());
   exe.spin();
