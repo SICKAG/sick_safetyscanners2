@@ -79,6 +79,14 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn SickSa
     "field_data",
     std::bind(
       &SickSafetyscannersLifeCycle::getFieldData, this, std::placeholders::_1, std::placeholders::_2));
+    
+  // Read sensor specific configurations
+  readTypeCodeSettings();
+
+  if (m_use_pers_conf)
+  {
+    readPersistentConfig();
+  }
 
   m_msg_creator = std::make_unique<sick::MessageCreator>(
     m_frame_id, m_time_offset, m_range_min, m_range_max, m_angle_offset, m_min_intensities);
@@ -100,14 +108,6 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn SickSa
   }
 
   RCLCPP_INFO(this->get_logger(), "Communication to Sensor set up");
-
-  // Read sensor specific configurations
-  readTypeCodeSettings();
-
-  if (m_use_pers_conf)
-  {
-    readPersistentConfig();
-  }
 
   RCLCPP_INFO(this->get_logger(), "Node Configured"); 
 
