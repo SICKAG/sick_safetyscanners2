@@ -25,6 +25,10 @@ find_package(sensor_msgs REQUIRED)
 find_package(sick_safetyscanners_base REQUIRED)
 find_package(sick_safetyscanners2_interfaces REQUIRED)
 
+if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebugInfo")
+  find_package(backward_ros REQUIRED)
+endif ()
+
 set(dependencies
   rclcpp
   rclcpp_lifecycle 
