@@ -2,8 +2,8 @@
 Changelog for package sick_safetyscanners2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.3 (2021-12-22)
+------------------
 * Fixes unsafe pointer access in UDP callback
 * Implement lifecycle node 
 * Added functionality to allow multicast
