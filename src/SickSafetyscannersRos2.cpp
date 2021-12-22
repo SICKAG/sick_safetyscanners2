@@ -394,11 +394,13 @@ void SickSafetyscannersRos2::receiveUDPPaket(const sick::datastructure::Data& da
 {
   if (!m_msg_creator)
   {
-    RCLCPP_WARN(get_logger(), "Received UDPP packet before all objects were instantiated, ignoring this packet.");
+    RCLCPP_WARN(get_logger(),
+                "Received UDPP packet before all objects were instantiated, ignoring this packet.");
     return;
   }
 
-  if (!data.getMeasurementDataPtr()->isEmpty() && !data.getDerivedValuesPtr()->isEmpty() && m_msg_creator)
+  if (!data.getMeasurementDataPtr()->isEmpty() && !data.getDerivedValuesPtr()->isEmpty() &&
+      m_msg_creator)
   {
     auto scan = m_msg_creator->createLaserScanMsg(data, this->now());
     m_laser_scan_publisher->publish(scan);
