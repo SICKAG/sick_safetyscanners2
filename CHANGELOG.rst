@@ -2,6 +2,16 @@
 Changelog for package sick_safetyscanners2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fixes unsafe pointer access in UDP callback
+* Implement lifecycle node 
+* Added functionality to allow multicast
+* set not using the default sick angles as default
+* moved changeSensor settings to be always be invoked
+* fixed typo in launch file
+* Contributors: Brice, Erwin Lejeune, Soma Gallai, Lennart Puck, Tanmay
+
 1.0.2 (2021-03-15)
 ------------------
 * added missing dependencies to package xml
