@@ -68,6 +68,10 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
   m_raw_data_publisher =
     this->create_publisher<sick_safetyscanners2_interfaces::msg::RawMicroScanData>("raw_data", 1);
 
+  m_config_metadata_service =
+    this->create_service<sick_safetyscanners2_interfaces::srv::ConfigMetadata>("config_metadata",
+    std::bind(&SickSafetyscannersRos2::getConfigMetadata,
+      this, std::placeholders::_1, std::placeholders::_2));
   m_field_data_service = this->create_service<sick_safetyscanners2_interfaces::srv::FieldData>(
     "field_data",
     std::bind(
@@ -418,6 +422,28 @@ void SickSafetyscannersRos2::receiveUDPPaket(const sick::datastructure::Data& da
   m_raw_data_publisher->publish(raw_msg);
 }
 
+bool SickSafetyscannersRos2::getConfigMetadata(
+  const std::shared_ptr<sick_safetyscanners2_interfaces::srv::ConfigMetadata::Request> request,
+  std::shared_ptr<sick_safetyscanners2_interfaces::srv::ConfigMetadata::Response> response)
+{
+  // Suppress warning of unused request variable due to empty request fields
+  (void)request;
+
+  auto metadata = sick::datastructure::ConfigMetadata();
+  m_device->requestConfigMetadata(metadata);
+  response->version_c_version = metadata.getVersionCVersion();
+  response->major_version_number = metadata.getVersionMajorVersionNumber();
+  response->minor_version_number = metadata.getVersionMinorVersionNumber();
+  response->release_version_number = metadata.getVersionReleaseNumber();
+  response->modification_time_date = metadata.getModificationTimeDate();
+  response->modification_time_time = metadata.getModificationTimeTime();
+  response->transfer_time_date = metadata.getTransferTimeDate();
+  response->transfer_time_time = metadata.getTransferTimeTime();
+  response->app_checksum = metadata.getAppChecksum();
+  response->overall_checksum = metadata.getOverallChecksum();
+  response->integrity_hash = metadata.getIntegrityHash();
+  return true;
+}
 
 bool SickSafetyscannersRos2::getFieldData(
   const std::shared_ptr<sick_safetyscanners2_interfaces::srv::FieldData::Request> request,

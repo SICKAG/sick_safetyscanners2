@@ -41,6 +41,7 @@
 
 #include <sick_safetyscanners2_interfaces/msg/extended_laser_scan.hpp>
 #include <sick_safetyscanners2_interfaces/msg/output_paths.hpp>
+#include <sick_safetyscanners2_interfaces/srv/config_metadata.hpp>
 #include <sick_safetyscanners2_interfaces/srv/field_data.hpp>
 
 #include <sick_safetyscanners2/utils/Conversions.h>
@@ -62,6 +63,10 @@ namespace sick {
 
 class SickSafetyscannersLifeCycle : public rclcpp_lifecycle::LifecycleNode
 {
+
+using ConfigMetadata = sick_safetyscanners2_interfaces::srv::ConfigMetadata;
+using FieldData = sick_safetyscanners2_interfaces::srv::FieldData;
+
 public:
   /*!
    * \brief Constructor of the ROS2 Node handling the Communication of the Sick Safetyscanner
@@ -93,7 +98,8 @@ private:
     sick_safetyscanners2_interfaces::msg::RawMicroScanData>::SharedPtr m_raw_data_publisher;
 
   // Services
-  rclcpp::Service<sick_safetyscanners2_interfaces::srv::FieldData>::SharedPtr m_field_data_service;
+  rclcpp::Service<ConfigMetadata>::SharedPtr m_config_metadata_service;
+  rclcpp::Service<FieldData>::SharedPtr m_field_data_service;
   // Parameters
   OnSetParametersCallbackHandle::SharedPtr m_param_callback;
   rcl_interfaces::msg::SetParametersResult
@@ -134,10 +140,15 @@ private:
   // Callback function passed to the device for handling the received packages
   void receiveUDPPaket(const sick::datastructure::Data& data);
 
+  // Callback function to retrieve configuration metadata
+  bool getConfigMetadata(
+    const std::shared_ptr<ConfigMetadata::Request> request,
+    std::shared_ptr<ConfigMetadata::Response> response);
+
   // Methods Triggering COLA2 calls towards the sensor
   bool getFieldData(
-    const std::shared_ptr<sick_safetyscanners2_interfaces::srv::FieldData::Request> request,
-    std::shared_ptr<sick_safetyscanners2_interfaces::srv::FieldData::Response> response);
+    const std::shared_ptr<FieldData::Request> request,
+    std::shared_ptr<FieldData::Response> response);
   void readPersistentConfig();
   void readTypeCodeSettings();
 };
