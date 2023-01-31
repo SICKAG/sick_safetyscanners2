@@ -42,6 +42,8 @@
 #include <sick_safetyscanners2_interfaces/msg/extended_laser_scan.hpp>
 #include <sick_safetyscanners2_interfaces/msg/output_paths.hpp>
 #include <sick_safetyscanners2_interfaces/srv/config_metadata.hpp>
+#include <sick_safetyscanners2_interfaces/srv/application_name.hpp>
+#include <sick_safetyscanners2_interfaces/srv/type_code.hpp>
 #include <sick_safetyscanners2_interfaces/srv/field_data.hpp>
 
 #include <sick_safetyscanners2/utils/Conversions.h>
@@ -66,6 +68,8 @@ class SickSafetyscannersLifeCycle : public rclcpp_lifecycle::LifecycleNode
 
 using ConfigMetadata = sick_safetyscanners2_interfaces::srv::ConfigMetadata;
 using FieldData = sick_safetyscanners2_interfaces::srv::FieldData;
+using ApplicationName = sick_safetyscanners2_interfaces::srv::ApplicationName;
+using TypeCode = sick_safetyscanners2_interfaces::srv::TypeCode;
 
 public:
   /*!
@@ -100,6 +104,8 @@ private:
   // Services
   rclcpp::Service<ConfigMetadata>::SharedPtr m_config_metadata_service;
   rclcpp::Service<FieldData>::SharedPtr m_field_data_service;
+  rclcpp::Service<ApplicationName>::SharedPtr m_application_name_service;
+  rclcpp::Service<TypeCode>::SharedPtr m_type_code_service;
   // Parameters
   OnSetParametersCallbackHandle::SharedPtr m_param_callback;
   rcl_interfaces::msg::SetParametersResult
@@ -144,6 +150,16 @@ private:
   bool getConfigMetadata(
     const std::shared_ptr<ConfigMetadata::Request> request,
     std::shared_ptr<ConfigMetadata::Response> response);
+
+  // Callback function to retrieve application name
+  bool getApplicationName(
+    const std::shared_ptr<ApplicationName::Request> request,
+    std::shared_ptr<ApplicationName::Response> response);
+    
+  // Callback function to retrieve type code
+  bool getTypeCode(
+    const std::shared_ptr<TypeCode::Request> request,
+    std::shared_ptr<TypeCode::Response> response);
 
   // Methods Triggering COLA2 calls towards the sensor
   bool getFieldData(
