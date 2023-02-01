@@ -76,6 +76,14 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
     "field_data",
     std::bind(
       &SickSafetyscannersRos2::getFieldData, this, std::placeholders::_1, std::placeholders::_2));
+  m_application_name_service =
+    this->create_service<sick_safetyscanners2_interfaces::srv::ApplicationName>("application_name",
+    std::bind(&SickSafetyscannersRos2::getApplicationName,
+      this, std::placeholders::_1, std::placeholders::_2));
+  m_type_code_service =
+    this->create_service<sick_safetyscanners2_interfaces::srv::TypeCode>("type_code",
+    std::bind(&SickSafetyscannersRos2::getTypeCode,
+      this, std::placeholders::_1, std::placeholders::_2));
 
   // Bind callback
   std::function<void(const sick::datastructure::Data&)> callback =
@@ -497,6 +505,41 @@ bool SickSafetyscannersRos2::getFieldData(
     response->monitoring_cases.push_back(monitoring_case_msg);
   }
 
+  return true;
+}
+
+bool SickSafetyscannersRos2::getApplicationName(
+  const std::shared_ptr<sick_safetyscanners2_interfaces::srv::ApplicationName::Request> request,
+  std::shared_ptr<sick_safetyscanners2_interfaces::srv::ApplicationName::Response> response)
+{
+  // Suppress warning of unused request variable due to empty request fields
+  (void)request;
+
+  auto app_name = sick::datastructure::ApplicationName();
+  m_device->requestApplicationName(app_name);
+  response->version_c_version = app_name.getVersionCVersion();
+  response->major_version_number = app_name.getVersionMajorVersionNumber();
+  response->minor_version_number = app_name.getVersionMinorVersionNumber();
+  response->release_version_number = app_name.getVersionReleaseNumber();
+  response->name_length = app_name.getNameLength();
+  response->application_name = app_name.getApplicationName();
+  
+  return true;
+}
+
+bool SickSafetyscannersRos2::getTypeCode(
+  const std::shared_ptr<sick_safetyscanners2_interfaces::srv::TypeCode::Request> request,
+  std::shared_ptr<sick_safetyscanners2_interfaces::srv::TypeCode::Response> response)
+{
+  // Suppress warning of unused request variable due to empty request fields
+  (void)request;
+
+  auto type_code = sick::datastructure::TypeCode();
+  m_device->requestTypeCode(type_code);
+  response->type_code = type_code.getTypeCode();
+  response->interface_type = type_code.getInterfaceType();
+  response->max_range = type_code.getMaxRange();  
+  
   return true;
 }
 
