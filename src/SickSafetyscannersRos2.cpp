@@ -38,6 +38,7 @@ namespace sick {
 
 SickSafetyscannersRos2::SickSafetyscannersRos2()
   : Node("SickSafetyscannersRos2")
+  , m_diagnostic_updater(this)
   , m_time_offset(0.0)
   , m_range_min(0.0)
   , m_range_max(0.0)
@@ -56,7 +57,6 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
     std::bind(&SickSafetyscannersRos2::parametersCallback, this, std::placeholders::_1));
 
   // TODO reconfigure?
-  // TODO diagnostics
 
   // init publishers and services
   m_laser_scan_publisher = this->create_publisher<sensor_msgs::msg::LaserScan>("scan", 1);
@@ -72,6 +72,15 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
     "field_data",
     std::bind(
       &SickSafetyscannersRos2::getFieldData, this, std::placeholders::_1, std::placeholders::_2));
+
+  // diagnostics
+  m_diagnostic_updater.setHardwareID(m_sensor_ip.to_string());
+
+  diagnostic_updater::FrequencyStatusParam frequency_param(&m_expected_frequency, &m_expected_frequency, m_frequency_tolerance);
+
+  diagnostic_updater::TimeStampStatusParam timestamp_param(m_timestamp_min_acceptable, m_timestamp_max_acceptable);
+
+  m_diagnosed_laser_scan_publisher = std::make_shared<DiagnosedLaserScanPublisher>(m_laser_scan_publisher, m_diagnostic_updater, frequency_param, timestamp_param);
 
   // Bind callback
   std::function<void(const sick::datastructure::Data&)> callback =
@@ -149,6 +158,11 @@ void SickSafetyscannersRos2::initialize_parameters()
   this->declare_parameter<bool>("application_io_data", true);
   this->declare_parameter<bool>("use_persistent_config", false);
   this->declare_parameter<float>("min_intensities", 0.f);
+
+  this->declare_parameter<double>("expected_frequency", 20);
+  this->declare_parameter<double>("frequency_tolerance", 0.1);
+  this->declare_parameter<double>("timestamp_min_acceptable", -1);
+  this->declare_parameter<double>("timestamp_max_acceptable", 1);
 }
 
 void SickSafetyscannersRos2::load_parameters()
@@ -193,6 +207,7 @@ void SickSafetyscannersRos2::load_parameters()
   this->get_parameter<int>("skip", skip);
   RCLCPP_INFO(node_logger, "skip: %i", skip);
   m_communications_settings.publishing_frequency = skipToPublishFrequency(skip);
+  m_expected_frequency = static_cast<double>(m_communications_settings.publishing_frequency) / 1000.0;
 
   float angle_start;
   this->get_parameter<float>("angle_start", angle_start);
@@ -248,6 +263,19 @@ void SickSafetyscannersRos2::load_parameters()
 
   this->get_parameter<double>("min_intensities", m_min_intensities);
   RCLCPP_INFO(node_logger, "min_intensities: %f", m_min_intensities);
+
+
+  this->get_parameter<double>("expected_frequency", m_expected_frequency);
+  RCLCPP_INFO(node_logger, "expected_frequency: %f", m_expected_frequency);
+
+  this->get_parameter<double>("frequency_tolerance", m_frequency_tolerance);
+  RCLCPP_INFO(node_logger, "frequency_tolerance: %f", m_frequency_tolerance);
+
+  this->get_parameter<double>("timestamp_min_acceptable", m_timestamp_min_acceptable);
+  RCLCPP_INFO(node_logger, "timestamp_min_acceptable: %f", m_timestamp_min_acceptable);
+
+  this->get_parameter<double>("timestamp_max_acceptable", m_timestamp_max_acceptable);
+  RCLCPP_INFO(node_logger, "timestamp_max_acceptable: %f", m_timestamp_max_acceptable);
 }
 
 rcl_interfaces::msg::SetParametersResult
@@ -403,7 +431,7 @@ void SickSafetyscannersRos2::receiveUDPPaket(const sick::datastructure::Data& da
       m_msg_creator)
   {
     auto scan = m_msg_creator->createLaserScanMsg(data, this->now());
-    m_laser_scan_publisher->publish(scan);
+    m_diagnosed_laser_scan_publisher->publish(scan);
 
     sick_safetyscanners2_interfaces::msg::ExtendedLaserScan extended_scan =
       m_msg_creator->createExtendedLaserScanMsg(data, this->now());

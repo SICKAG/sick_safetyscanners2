@@ -18,6 +18,7 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(Boost REQUIRED COMPONENTS chrono)
+find_package(diagnostic_updater REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
@@ -26,6 +27,7 @@ find_package(sick_safetyscanners_base REQUIRED)
 find_package(sick_safetyscanners2_interfaces REQUIRED)
 
 set(dependencies
+  diagnostic_updater
   rclcpp
   rclcpp_lifecycle 
   lifecycle_msgs 

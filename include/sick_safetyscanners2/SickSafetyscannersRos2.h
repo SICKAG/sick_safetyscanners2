@@ -46,6 +46,8 @@
 #include <sick_safetyscanners2/utils/Conversions.h>
 #include <sick_safetyscanners2/utils/MessageCreator.h>
 
+#include <diagnostic_updater/diagnostic_updater.hpp>
+#include <diagnostic_updater/publisher.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 
@@ -62,6 +64,8 @@ public:
   SickSafetyscannersRos2();
 
 private:
+  using DiagnosedLaserScanPublisher = diagnostic_updater::DiagnosedPublisher<sensor_msgs::msg::LaserScan>;
+
   // Publishers
   rclcpp::Publisher<sick_safetyscanners2_interfaces::msg::ExtendedLaserScan>::SharedPtr
     m_extended_laser_scan_publisher;
@@ -70,6 +74,10 @@ private:
     m_output_paths_publisher;
   rclcpp::Publisher<sick_safetyscanners2_interfaces::msg::RawMicroScanData>::SharedPtr
     m_raw_data_publisher;
+
+  // Diagnostics
+  diagnostic_updater::Updater m_diagnostic_updater;
+  std::shared_ptr<DiagnosedLaserScanPublisher> m_diagnosed_laser_scan_publisher;
 
   // Services
   rclcpp::Service<sick_safetyscanners2_interfaces::srv::FieldData>::SharedPtr m_field_data_service;
@@ -103,7 +111,6 @@ private:
   float m_angle_offset;
   bool m_use_pers_conf;
 
-  // TODO diagnostics?
   // TODO dynamic reconfigure?
 
   // Methods for ROS2 parameter handling
