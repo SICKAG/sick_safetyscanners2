@@ -207,7 +207,6 @@ void SickSafetyscannersRos2::load_parameters()
   this->get_parameter<int>("skip", skip);
   RCLCPP_INFO(node_logger, "skip: %i", skip);
   m_communications_settings.publishing_frequency = skipToPublishFrequency(skip);
-  m_expected_frequency = static_cast<double>(m_communications_settings.publishing_frequency) / 1000.0;
 
   float angle_start;
   this->get_parameter<float>("angle_start", angle_start);
