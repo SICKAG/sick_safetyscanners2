@@ -134,14 +134,15 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 SickSafetyscannersLifeCycle::on_activate(const rclcpp_lifecycle::State&)
 {
   RCLCPP_INFO(this->get_logger(), "on_activate()...");
-  // Start async receiving and processing of sensor data
-  m_device->run();
-  m_device->changeSensorSettings(m_communications_settings);
 
   m_laser_scan_publisher->on_activate();
   m_extended_laser_scan_publisher->on_activate();
   m_output_paths_publisher->on_activate();
   m_raw_data_publisher->on_activate();
+
+  // Start async receiving and processing of sensor data
+  m_device->run();
+  m_device->changeSensorSettings(m_communications_settings);
 
   RCLCPP_INFO(this->get_logger(), "Node activated, device is running...");
 
