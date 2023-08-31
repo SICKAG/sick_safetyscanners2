@@ -32,9 +32,7 @@
  */
 //----------------------------------------------------------------------
 
-#include <sick_safetyscanners_base/SickSafetyscanners.h>
-
-#include <sick_safetyscanners2/SickSafetyscannersRos2.h>
+#include <sick_safetyscanners2/SickSafetyscannersLifeCycle.hpp>
 
 #include <rclcpp/rclcpp.hpp>
 
@@ -46,8 +44,17 @@ int main(int argc, char** argv)
   (void)argv;
 
 
+  setvbuf(stdout, NULL, _IONBF, BUFSIZ);
+
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<sick::SickSafetyscannersRos2>());
+  rclcpp::executors::SingleThreadedExecutor exe;
+  std::shared_ptr<sick::SickSafetyscannersLifeCycle> nh_ =
+      std::make_shared<sick::SickSafetyscannersLifeCycle>("SickSafetyscannersRos2");
+  nh_->configure();
+  nh_->activate();
+  exe.add_node(nh_->get_node_base_interface());
+  exe.spin();
+
   rclcpp::shutdown();
   return 0;
 }
