@@ -51,8 +51,7 @@
 
 namespace sick {
 
-class MessageCreator
-{
+class MessageCreator {
 public:
   /*!
    * \brief Constructor of the Message helper class.
@@ -64,13 +63,10 @@ public:
    * \param angle_offset The offset added to the angle
    * \param min_intensities Threshold to filter too low intensities
    */
-  MessageCreator(std::string frame_id,
-                 double time_offset,
-                 double range_min,
+  MessageCreator(std::string frame_id, double time_offset, double range_min,
                  double range_max,
                  float angle_offset, // TODO still needed?
                  double min_intensities);
-
 
   /*!
    * \brief Creates a Laserscan message from the parsed data.
@@ -80,9 +76,8 @@ public:
    *
    * \returns The constructed LaserScan Message
    */
-  sensor_msgs::msg::LaserScan createLaserScanMsg(const sick::datastructure::Data& data,
-                                                 rclcpp::Time now);
-
+  sensor_msgs::msg::LaserScan
+  createLaserScanMsg(const sick::datastructure::Data &data, rclcpp::Time now);
 
   /*!
    * \brief Creates the Output Pats Message from the parsed data.
@@ -92,10 +87,11 @@ public:
    * \returns The constructed OutputPaths Message
    */
   sick_safetyscanners2_interfaces::msg::OutputPaths
-  createOutputPathsMsg(const sick::datastructure::Data& data);
+  createOutputPathsMsg(const sick::datastructure::Data &data);
 
   /*!
-   * \brief Constructs an extended LaserScan including reflector values from the parsed data.
+   * \brief Constructs an extended LaserScan including reflector values from the
+   * parsed data.
    *
    * \param data The parsed data from the sensor
    * \param now The current timestamp to give the message
@@ -103,8 +99,8 @@ public:
    * \returns The constructed extended LaserScan Message
    */
   sick_safetyscanners2_interfaces::msg::ExtendedLaserScan
-  createExtendedLaserScanMsg(const sick::datastructure::Data& data, rclcpp::Time now);
-
+  createExtendedLaserScanMsg(const sick::datastructure::Data &data,
+                             rclcpp::Time now);
 
   /*!
    * \brief Constructs a message containing all raw values from the sensor.
@@ -114,7 +110,7 @@ public:
    * \returns The raw values of the sensor in a ROS2 Message.
    */
   sick_safetyscanners2_interfaces::msg::RawMicroScanData
-  createRawDataMsg(const sick::datastructure::Data& data);
+  createRawDataMsg(const sick::datastructure::Data &data);
 
 private:
   std::string m_frame_id;
@@ -125,30 +121,30 @@ private:
   double m_min_intensities = 0.0; /*!< min intensities for laser points */
 
   // Calculation to get the median point of a reflector
-  std::vector<bool>
-  getMedianReflectors(const std::vector<sick::datastructure::ScanPoint> scan_points);
+  std::vector<bool> getMedianReflectors(
+      const std::vector<sick::datastructure::ScanPoint> scan_points);
 
   // private helper functions to create the parts of the  messages
   sick_safetyscanners2_interfaces::msg::DataHeader
-  createDataHeaderMsg(const sick::datastructure::Data& data);
+  createDataHeaderMsg(const sick::datastructure::Data &data);
   sick_safetyscanners2_interfaces::msg::DerivedValues
-  createDerivedValuesMsg(const sick::datastructure::Data& data);
+  createDerivedValuesMsg(const sick::datastructure::Data &data);
   sick_safetyscanners2_interfaces::msg::GeneralSystemState
-  createGeneralSystemStateMsg(const sick::datastructure::Data& data);
+  createGeneralSystemStateMsg(const sick::datastructure::Data &data);
   sick_safetyscanners2_interfaces::msg::MeasurementData
-  createMeasurementDataMsg(const sick::datastructure::Data& data);
+  createMeasurementDataMsg(const sick::datastructure::Data &data);
   std::vector<sick_safetyscanners2_interfaces::msg::ScanPoint>
-  createScanPointMsgVector(const sick::datastructure::Data& data);
+  createScanPointMsgVector(const sick::datastructure::Data &data);
   sick_safetyscanners2_interfaces::msg::IntrusionData
-  createIntrusionDataMsg(const sick::datastructure::Data& data);
+  createIntrusionDataMsg(const sick::datastructure::Data &data);
   std::vector<sick_safetyscanners2_interfaces::msg::IntrusionDatum>
-  createIntrusionDatumMsgVector(const sick::datastructure::Data& data);
+  createIntrusionDatumMsgVector(const sick::datastructure::Data &data);
   sick_safetyscanners2_interfaces::msg::ApplicationData
-  createApplicationDataMsg(const sick::datastructure::Data& data);
+  createApplicationDataMsg(const sick::datastructure::Data &data);
   sick_safetyscanners2_interfaces::msg::ApplicationInputs
-  createApplicationInputsMsg(const sick::datastructure::Data& data);
+  createApplicationInputsMsg(const sick::datastructure::Data &data);
   sick_safetyscanners2_interfaces::msg::ApplicationOutputs
-  createApplicationOutputsMsg(const sick::datastructure::Data& data);
+  createApplicationOutputsMsg(const sick::datastructure::Data &data);
 };
 
 } // end namespace sick

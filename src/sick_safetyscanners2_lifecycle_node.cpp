@@ -27,8 +27,8 @@
 /*!
  * \file sick_safetyscanners2_lifecycle_node.cpp
  *
- * \authors Soma gallai<soma.gallai@cm-robotics.com>  Erwin Lejeune <erwin.lejeune@cm-robotics.com>
- * \date    2021-05-27
+ * \authors Soma gallai<soma.gallai@cm-robotics.com>  Erwin Lejeune
+ * <erwin.lejeune@cm-robotics.com> \date    2021-05-27
  */
 //----------------------------------------------------------------------
 
@@ -38,18 +38,17 @@
 
 #include <cstdio>
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   (void)argc;
   (void)argv;
-
 
   setvbuf(stdout, NULL, _IONBF, BUFSIZ);
 
   rclcpp::init(argc, argv);
   rclcpp::executors::SingleThreadedExecutor exe;
   std::shared_ptr<sick::SickSafetyscannersLifeCycle> nh_ =
-    std::make_shared<sick::SickSafetyscannersLifeCycle>("SickSafetyscannersLifecycle");
+      std::make_shared<sick::SickSafetyscannersLifeCycle>(
+          "SickSafetyscannersLifecycle");
 
   exe.add_node(nh_->get_node_base_interface());
   exe.spin();
