@@ -137,6 +137,12 @@ Gives feedback of the current status of the output paths.
 
 Publishes the raw data from the sensor as a ROS2 message.
 
+`
+~/diagnostics (type: diagnostic_msgs/msg/DiagnosticArray)
+`
+
+Frequency and sensor diagnostics
+
 ### Advertised ROS2 Services
 
 `

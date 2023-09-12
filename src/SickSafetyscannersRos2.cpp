@@ -44,11 +44,6 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
   initializeParameters(*this);
   loadParameters(*this);
 
-  // Dynamic Parameter Change client
-  m_param_callback = add_on_set_parameters_callback(
-      std::bind(&SickSafetyscannersRos2::parametersCallback, this,
-                std::placeholders::_1));
-
   // init publishers and services
   m_laser_scan_publisher =
       this->create_publisher<sensor_msgs::msg::LaserScan>("scan", 1);
@@ -66,6 +61,27 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
           "field_data",
           std::bind(&SickSafetyscannersRos2::getFieldData, this,
                     std::placeholders::_1, std::placeholders::_2));
+
+  // Diagnostics
+  m_diagnostic_updater = std::make_shared<diagnostic_updater::Updater>(this);
+  m_diagnostic_updater->setHardwareID(m_config.m_sensor_ip.to_string());
+
+  diagnostic_updater::FrequencyStatusParam frequency_param(
+      &m_config.m_expected_frequency, &m_config.m_expected_frequency,
+      m_config.m_frequency_tolerance);
+
+  diagnostic_updater::TimeStampStatusParam timestamp_param(
+      m_config.m_timestamp_min_acceptable, m_config.m_timestamp_max_acceptable);
+
+  m_diagnosed_laser_scan_publisher =
+      std::make_shared<DiagnosedLaserScanPublisher>(
+          m_laser_scan_publisher, *m_diagnostic_updater, frequency_param,
+          timestamp_param);
+
+  // Dynamic Parameter Change client
+  m_param_callback = add_on_set_parameters_callback(
+      std::bind(&SickSafetyscannersRos2::parametersCallback, this,
+                std::placeholders::_1));
 
   setupCommunication(std::bind(&SickSafetyscannersRos2::receiveUDPPaket, this,
                                std::placeholders::_1));
@@ -85,7 +101,7 @@ void SickSafetyscannersRos2::receiveUDPPaket(
   if (!data.getMeasurementDataPtr()->isEmpty() &&
       !data.getDerivedValuesPtr()->isEmpty()) {
     auto scan = m_config.m_msg_creator->createLaserScanMsg(data, this->now());
-    m_laser_scan_publisher->publish(scan);
+    m_diagnosed_laser_scan_publisher->publish(scan);
 
     sick_safetyscanners2_interfaces::msg::ExtendedLaserScan extended_scan =
         m_config.m_msg_creator->createExtendedLaserScanMsg(data, this->now());

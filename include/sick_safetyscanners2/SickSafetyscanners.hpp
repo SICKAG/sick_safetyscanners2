@@ -68,7 +68,7 @@ protected:
     double m_range_min = 0.0;
     double m_range_max;
     double m_frequency_tolerance = 0.1;
-    double m_expected_frequency = 20.0;
+    double m_expected_frequency = 34.0;
     double m_timestamp_min_acceptable = -1.0;
     double m_timestamp_max_acceptable = 1.0;
     double m_min_intensities = 0.0; /*!< min intensities for laser points */
@@ -113,6 +113,11 @@ protected:
     node.template declare_parameter<bool>("application_io_data", true);
     node.template declare_parameter<bool>("use_persistent_config", false);
     node.template declare_parameter<float>("min_intensities", 0.f);
+
+    node.template declare_parameter<double>("expected_frequency", 34);
+    node.template declare_parameter<double>("frequency_tolerance", 0.1);
+    node.template declare_parameter<double>("timestamp_min_acceptable", -1);
+    node.template declare_parameter<double>("timestamp_max_acceptable", 1);
   }
 
   /**
@@ -231,6 +236,26 @@ protected:
     node.template get_parameter<double>("min_intensities",
                                         m_config.m_min_intensities);
     RCLCPP_INFO(getLogger(), "min_intensities: %f", m_config.m_min_intensities);
+
+    node.template get_parameter<double>("expected_frequency",
+                                        m_config.m_expected_frequency);
+    RCLCPP_INFO(getLogger(), "expected_frequency: %f",
+                m_config.m_expected_frequency);
+
+    node.template get_parameter<double>("frequency_tolerance",
+                                        m_config.m_frequency_tolerance);
+    RCLCPP_INFO(getLogger(), "frequency_tolerance: %f",
+                m_config.m_frequency_tolerance);
+
+    node.template get_parameter<double>("timestamp_min_acceptable",
+                                        m_config.m_timestamp_min_acceptable);
+    RCLCPP_INFO(getLogger(), "timestamp_min_acceptable: %f",
+                m_config.m_timestamp_min_acceptable);
+
+    node.template get_parameter<double>("timestamp_max_acceptable",
+                                        m_config.m_timestamp_max_acceptable);
+    RCLCPP_INFO(getLogger(), "timestamp_max_acceptable: %f",
+                m_config.m_timestamp_max_acceptable);
   }
 
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr
