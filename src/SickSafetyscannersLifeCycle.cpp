@@ -52,13 +52,6 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 SickSafetyscannersLifeCycle::on_configure(const rclcpp_lifecycle::State &) {
   RCLCPP_INFO(this->get_logger(), "on_configure()...");
 
-  // Dynamic Parameter Change client
-  m_param_callback = add_on_set_parameters_callback(
-      std::bind(&SickSafetyscannersLifeCycle::parametersCallback, this,
-                std::placeholders::_1));
-
-  // TODO diagnostics
-
   // init publishers and services
   m_laser_scan_publisher =
       this->create_publisher<sensor_msgs::msg::LaserScan>("scan", 1);
@@ -76,6 +69,11 @@ SickSafetyscannersLifeCycle::on_configure(const rclcpp_lifecycle::State &) {
           "field_data",
           std::bind(&SickSafetyscannersLifeCycle::getFieldData, this,
                     std::placeholders::_1, std::placeholders::_2));
+
+  // Dynamic Parameter Change client
+  m_param_callback = add_on_set_parameters_callback(
+      std::bind(&SickSafetyscannersLifeCycle::parametersCallback, this,
+                std::placeholders::_1));
 
   setupCommunication(std::bind(&SickSafetyscannersLifeCycle::receiveUDPPaket,
                                this, std::placeholders::_1));
@@ -95,7 +93,7 @@ SickSafetyscannersLifeCycle::on_activate(const rclcpp_lifecycle::State &) {
   m_output_paths_publisher->on_activate();
   m_raw_data_publisher->on_activate();
 
-  startCommunication();
+  startCommunication(this, m_laser_scan_publisher);
 
   RCLCPP_INFO(this->get_logger(), "Node activated, device is running...");
 
@@ -154,7 +152,7 @@ void SickSafetyscannersLifeCycle::receiveUDPPaket(
   if (!data.getMeasurementDataPtr()->isEmpty() &&
       !data.getDerivedValuesPtr()->isEmpty()) {
     auto scan = m_config.m_msg_creator->createLaserScanMsg(data, this->now());
-    m_laser_scan_publisher->publish(scan);
+    m_diagnosed_laser_scan_publisher->publish(scan);
 
     sick_safetyscanners2_interfaces::msg::ExtendedLaserScan extended_scan =
         m_config.m_msg_creator->createExtendedLaserScanMsg(data, this->now());

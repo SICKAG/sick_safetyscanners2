@@ -33,6 +33,8 @@
 #pragma once
 
 #include <diagnostic_updater/diagnostic_status_wrapper.hpp>
+#include <diagnostic_updater/diagnostic_updater.hpp>
+#include <diagnostic_updater/publisher.hpp>
 
 #include <sick_safetyscanners_base/SickSafetyscanners.h>
 
@@ -53,6 +55,9 @@ namespace sick {
  */
 class SickSafetyscanners {
 public:
+  using DiagnosedLaserScanPublisher =
+      diagnostic_updater::DiagnosedPublisher<sensor_msgs::msg::LaserScan>;
+
   /**
    * Sick safety scanner configuration
    */
@@ -269,6 +274,10 @@ public:
   rcl_interfaces::msg::SetParametersResult
   parametersCallback(std::vector<rclcpp::Parameter> parameters);
 
+  // Diagnostics
+  std::shared_ptr<diagnostic_updater::Updater> m_diagnostic_updater;
+  std::shared_ptr<DiagnosedLaserScanPublisher> m_diagnosed_laser_scan_publisher;
+
   // Device and Communication
   std::unique_ptr<sick::AsyncSickSafetyScanner> m_device;
 
@@ -282,7 +291,34 @@ public:
   /**
    * Start the sensor communication by receiving UDP packets
    */
-  void startCommunication();
+  template <typename NodeT>
+  void startCommunication(
+      NodeT *node,
+      rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr publisher) {
+    // Set-up diagnostics
+    m_diagnostic_updater = std::make_shared<diagnostic_updater::Updater>(node);
+    m_diagnostic_updater->setHardwareID(m_config.m_sensor_ip.to_string());
+
+    diagnostic_updater::FrequencyStatusParam frequency_param(
+        &m_config.m_expected_frequency, &m_config.m_expected_frequency,
+        m_config.m_frequency_tolerance);
+
+    diagnostic_updater::TimeStampStatusParam timestamp_param(
+        m_config.m_timestamp_min_acceptable,
+        m_config.m_timestamp_max_acceptable);
+
+    m_diagnosed_laser_scan_publisher =
+        std::make_shared<DiagnosedLaserScanPublisher>(
+            publisher, *m_diagnostic_updater, frequency_param, timestamp_param);
+
+    m_diagnostic_updater->add("State", this,
+                              &SickSafetyscanners::sensorDiagnostics);
+
+    // Start async receiving and processing of sensor data
+    RCLCPP_INFO(getLogger(), "Run");
+    m_device->run();
+    m_device->changeSensorSettings(m_config.m_communications_settings);
+  }
 
   /**
    * Stop the sensor communication

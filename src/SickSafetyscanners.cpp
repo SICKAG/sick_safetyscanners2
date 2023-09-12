@@ -42,6 +42,10 @@ rcl_interfaces::msg::SetParametersResult SickSafetyscanners::parametersCallback(
   bool update_sensor_config = false;
 
   for (const auto &param : parameters) {
+    if (param.get_name().rfind("diagnostic_updater.", 0) == 0) {
+      continue;
+    }
+
     std::stringstream ss;
     ss << "{" << param.get_name() << ", " << param.value_to_string() << "}";
     RCLCPP_INFO(getLogger(), "Got parameter: '%s'", ss.str().c_str());
@@ -144,13 +148,11 @@ void SickSafetyscanners::setupCommunication(
   m_config.setupMsgCreator();
 }
 
-void SickSafetyscanners::startCommunication() {
-  // Start async receiving and processing of sensor data
-  m_device->run();
-  m_device->changeSensorSettings(m_config.m_communications_settings);
+void SickSafetyscanners::stopCommunication() {
+  m_device->stop();
+  m_diagnosed_laser_scan_publisher.reset();
+  m_diagnostic_updater.reset();
 }
-
-void SickSafetyscanners::stopCommunication() { m_device->stop(); }
 
 std::string boolToString(bool b) { return b ? "true" : "false"; }
 

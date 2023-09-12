@@ -35,9 +35,6 @@
 #ifndef SICK_SAFETYSCANNERS2_SICKSAFETYSCANNERSROS2_H
 #define SICK_SAFETYSCANNERS2_SICKSAFETYSCANNERSROS2_H
 
-#include <diagnostic_updater/diagnostic_updater.hpp>
-#include <diagnostic_updater/publisher.hpp>
-
 #include <sick_safetyscanners_base/SickSafetyscanners.h>
 #include <sick_safetyscanners_base/Types.h>
 #include <sick_safetyscanners_base/datastructure/Data.h>
@@ -67,9 +64,6 @@ public:
   SickSafetyscannersRos2();
 
 private:
-  using DiagnosedLaserScanPublisher =
-      diagnostic_updater::DiagnosedPublisher<sensor_msgs::msg::LaserScan>;
-
   // Publishers
   rclcpp::Publisher<sick_safetyscanners2_interfaces::msg::ExtendedLaserScan>::
       SharedPtr m_extended_laser_scan_publisher;
@@ -83,10 +77,6 @@ private:
   // Services
   rclcpp::Service<sick_safetyscanners2_interfaces::srv::FieldData>::SharedPtr
       m_field_data_service;
-
-  // Diagnostics
-  std::shared_ptr<diagnostic_updater::Updater> m_diagnostic_updater;
-  std::shared_ptr<DiagnosedLaserScanPublisher> m_diagnosed_laser_scan_publisher;
 
   // Callback function passed to the device for handling the received packages
   void receiveUDPPaket(const sick::datastructure::Data &data);

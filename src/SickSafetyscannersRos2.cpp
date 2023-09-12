@@ -62,25 +62,6 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
           std::bind(&SickSafetyscannersRos2::getFieldData, this,
                     std::placeholders::_1, std::placeholders::_2));
 
-  // Diagnostics
-  m_diagnostic_updater = std::make_shared<diagnostic_updater::Updater>(this);
-  m_diagnostic_updater->setHardwareID(m_config.m_sensor_ip.to_string());
-
-  diagnostic_updater::FrequencyStatusParam frequency_param(
-      &m_config.m_expected_frequency, &m_config.m_expected_frequency,
-      m_config.m_frequency_tolerance);
-
-  diagnostic_updater::TimeStampStatusParam timestamp_param(
-      m_config.m_timestamp_min_acceptable, m_config.m_timestamp_max_acceptable);
-
-  m_diagnosed_laser_scan_publisher =
-      std::make_shared<DiagnosedLaserScanPublisher>(
-          m_laser_scan_publisher, *m_diagnostic_updater, frequency_param,
-          timestamp_param);
-
-  m_diagnostic_updater->add("State", static_cast<SickSafetyscanners *>(this),
-                            &SickSafetyscanners::sensorDiagnostics);
-
   // Dynamic Parameter Change client
   m_param_callback = add_on_set_parameters_callback(
       std::bind(&SickSafetyscannersRos2::parametersCallback, this,
@@ -88,7 +69,8 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
 
   setupCommunication(std::bind(&SickSafetyscannersRos2::receiveUDPPaket, this,
                                std::placeholders::_1));
-  startCommunication();
+
+  startCommunication(this, m_laser_scan_publisher);
 
   RCLCPP_INFO(this->get_logger(), "Node Configured and running");
 }
