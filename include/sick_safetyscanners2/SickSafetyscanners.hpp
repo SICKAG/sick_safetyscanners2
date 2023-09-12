@@ -32,6 +32,8 @@
 
 #pragma once
 
+#include <diagnostic_updater/diagnostic_status_wrapper.hpp>
+
 #include <sick_safetyscanners_base/SickSafetyscanners.h>
 
 #include <sick_safetyscanners2_interfaces/srv/field_data.hpp>
@@ -50,7 +52,7 @@ namespace sick {
  * between the Node (Ros2) and LifCycle node (LifeCycle)
  */
 class SickSafetyscanners {
-protected:
+public:
   /**
    * Sick safety scanner configuration
    */
@@ -77,6 +79,10 @@ protected:
     bool m_use_pers_conf = false;
 
     sick::types::port_t m_tcp_port = 2122;
+
+    datastructure::ConfigMetadata m_metadata;
+
+    datastructure::FirmwareVersion m_firmware_version;
 
     sick::datastructure::CommSettings m_communications_settings;
 
@@ -283,6 +289,11 @@ protected:
    */
   void stopCommunication();
 
+  // Diagnostics
+  sick_safetyscanners2_interfaces::msg::RawMicroScanData m_last_raw_msg;
+  void sensorDiagnostics(
+      diagnostic_updater::DiagnosticStatusWrapper &diagnostic_status);
+
   // Methods Triggering COLA2 calls towards the sensor
   bool getFieldData(
       const std::shared_ptr<
@@ -293,6 +304,8 @@ protected:
 
   void readPersistentConfig();
   void readTypeCodeSettings();
+  void readMetadata();
+  void readFirmwareVersion();
 
 private:
   rclcpp::Logger getLogger() {

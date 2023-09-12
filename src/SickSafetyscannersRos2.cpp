@@ -78,6 +78,9 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
           m_laser_scan_publisher, *m_diagnostic_updater, frequency_param,
           timestamp_param);
 
+  m_diagnostic_updater->add("State", static_cast<SickSafetyscanners *>(this),
+                            &SickSafetyscanners::sensorDiagnostics);
+
   // Dynamic Parameter Change client
   m_param_callback = add_on_set_parameters_callback(
       std::bind(&SickSafetyscannersRos2::parametersCallback, this,
@@ -112,7 +115,7 @@ void SickSafetyscannersRos2::receiveUDPPaket(
     m_output_paths_publisher->publish(output_paths);
   }
 
-  auto raw_msg = m_config.m_msg_creator->createRawDataMsg(data);
-  m_raw_data_publisher->publish(raw_msg);
+  m_last_raw_msg = m_config.m_msg_creator->createRawDataMsg(data);
+  m_raw_data_publisher->publish(m_last_raw_msg);
 }
 } // namespace sick

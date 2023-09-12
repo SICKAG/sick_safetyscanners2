@@ -165,7 +165,7 @@ void SickSafetyscannersLifeCycle::receiveUDPPaket(
     m_output_paths_publisher->publish(output_paths);
   }
 
-  auto raw_msg = m_config.m_msg_creator->createRawDataMsg(data);
-  m_raw_data_publisher->publish(raw_msg);
+  m_last_raw_msg = m_config.m_msg_creator->createRawDataMsg(data);
+  m_raw_data_publisher->publish(m_last_raw_msg);
 }
 } // namespace sick

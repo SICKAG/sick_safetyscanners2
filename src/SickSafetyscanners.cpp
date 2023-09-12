@@ -134,6 +134,8 @@ void SickSafetyscanners::setupCommunication(
 
   // Read sensor specific configurations
   readTypeCodeSettings();
+  readMetadata();
+  readFirmwareVersion();
 
   if (m_config.m_use_pers_conf) {
     readPersistentConfig();
@@ -149,6 +151,83 @@ void SickSafetyscanners::startCommunication() {
 }
 
 void SickSafetyscanners::stopCommunication() { m_device->stop(); }
+
+std::string boolToString(bool b) { return b ? "true" : "false"; }
+
+void SickSafetyscanners::sensorDiagnostics(
+    diagnostic_updater::DiagnosticStatusWrapper &diagnostic_status) {
+  const sick_safetyscanners2_interfaces::msg::DataHeader &header =
+      m_last_raw_msg.header;
+  if (header.timestamp_time == 0 && header.timestamp_date == 0) {
+    diagnostic_status.summary(diagnostic_msgs::msg::DiagnosticStatus::STALE,
+                              "Could not get sensor state");
+    return;
+  }
+
+  diagnostic_status.addf("Version version", "%u", header.version_version);
+  diagnostic_status.addf("Version major version", "%u",
+                         header.version_major_version);
+  diagnostic_status.addf("Version minor version", "%u",
+                         header.version_minor_version);
+  diagnostic_status.addf("Version release", "%u", header.version_release);
+  diagnostic_status.addf(
+      "Firmware version", "%s",
+      m_config.m_firmware_version.getFirmwareVersion().c_str());
+  diagnostic_status.addf("Serial number of device", "%u",
+                         header.serial_number_of_device);
+  diagnostic_status.addf("Serial number of channel plug", "%u",
+                         header.serial_number_of_channel_plug);
+  diagnostic_status.addf("App checksum", "%X",
+                         m_config.m_metadata.getAppChecksum());
+  diagnostic_status.addf("Overall checksum", "%X",
+                         m_config.m_metadata.getOverallChecksum());
+  diagnostic_status.addf("Channel number", "%u", header.channel_number);
+  diagnostic_status.addf("Sequence number", "%u", header.sequence_number);
+  diagnostic_status.addf("Scan number", "%u", header.scan_number);
+  diagnostic_status.addf("Timestamp date", "%u", header.timestamp_date);
+  diagnostic_status.addf("Timestamp time", "%u", header.timestamp_time);
+
+  const sick_safetyscanners2_interfaces::msg::GeneralSystemState &state =
+      m_last_raw_msg.general_system_state;
+  diagnostic_status.add("Run mode active", boolToString(state.run_mode_active));
+  diagnostic_status.add("Standby mode active",
+                        boolToString(state.standby_mode_active));
+  diagnostic_status.add("Contamination warning",
+                        boolToString(state.contamination_warning));
+  diagnostic_status.add("Contamination error",
+                        boolToString(state.contamination_error));
+  diagnostic_status.add("Reference contour status",
+                        boolToString(state.reference_contour_status));
+  diagnostic_status.add("Manipulation status",
+                        boolToString(state.manipulation_status));
+  diagnostic_status.addf("Current monitoring case no table 1", "%u",
+                         state.current_monitoring_case_no_table_1);
+  diagnostic_status.addf("Current monitoring case no table 2", "%u",
+                         state.current_monitoring_case_no_table_2);
+  diagnostic_status.addf("Current monitoring case no table 3", "%u",
+                         state.current_monitoring_case_no_table_3);
+  diagnostic_status.addf("Current monitoring case no table 4", "%u",
+                         state.current_monitoring_case_no_table_4);
+  diagnostic_status.add("Application error",
+                        boolToString(state.application_error));
+  diagnostic_status.add("Device error", boolToString(state.device_error));
+
+  if (state.device_error) {
+    diagnostic_status.summary(diagnostic_msgs::msg::DiagnosticStatus::ERROR,
+                              "Device error");
+  } else if (state.application_error) {
+    diagnostic_status.summary(diagnostic_msgs::msg::DiagnosticStatus::ERROR,
+                              "Application error");
+  } else if (state.contamination_error) {
+    diagnostic_status.summary(diagnostic_msgs::msg::DiagnosticStatus::ERROR,
+                              "Contamination error");
+  } else if (state.contamination_warning) {
+    diagnostic_status.summary(diagnostic_msgs::msg::DiagnosticStatus::WARN,
+                              "Contamination warning");
+  } else {
+    diagnostic_status.summary(diagnostic_msgs::msg::DiagnosticStatus::OK, "OK");
+  }
+}
 
 bool SickSafetyscanners::getFieldData(
     const std::shared_ptr<
@@ -219,5 +298,15 @@ void SickSafetyscanners::readPersistentConfig() {
   m_device->requestPersistentConfig(config_data);
   m_config.m_communications_settings.start_angle = config_data.getStartAngle();
   m_config.m_communications_settings.end_angle = config_data.getEndAngle();
+}
+
+void SickSafetyscanners::readMetadata() {
+  RCLCPP_INFO(getLogger(), "Reading Metadata");
+  m_device->requestConfigMetadata(m_config.m_metadata);
+}
+
+void SickSafetyscanners::readFirmwareVersion() {
+  RCLCPP_INFO(getLogger(), "Reading firmware version");
+  m_device->requestFirmwareVersion(m_config.m_firmware_version);
 }
 } // namespace sick
