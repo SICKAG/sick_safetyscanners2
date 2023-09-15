@@ -545,3 +545,4 @@ bool SickSafetyscannersRos2::getTypeCode(
 
 
 } // namespace sick
+RCLCPP_COMPONENTS_REGISTER_NODE(sick::SickSafetyscannersRos2)

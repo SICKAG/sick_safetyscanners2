@@ -54,6 +54,25 @@ target_include_directories(sick_safetyscanners2_node PUBLIC
   src/SickSafetyscannersLifeCycle.cpp
   src/utils/MessageCreator.cpp)
 
+# Register sick_safetyscanners2_component as a component
+add_library(sick_safetyscanners2_component SHARED
+  src/sick_safetyscanners2_node.cpp
+  src/SickSafetyscannersRos2.cpp
+  src/utils/MessageCreator.cpp)
+
+target_link_libraries(sick_safetyscanners2_component
+  sick_safetyscanners_base::sick_safetyscanners_base
+  ${Boost_LIBRARIES})
+
+ament_target_dependencies(sick_safetyscanners2_component ${dependencies})
+
+target_include_directories(sick_safetyscanners2_component PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+
+# Manually register the component
+rclcpp_components_register_nodes(sick_safetyscanners2_component "sick::SickSafetyscannersRos2")
+
 target_link_libraries(sick_safetyscanners2_lifecycle_node 
   sick_safetyscanners_base::sick_safetyscanners_base
   ${Boost_LIBRARIES})
