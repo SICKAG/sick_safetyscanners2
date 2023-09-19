@@ -166,7 +166,7 @@ void SickSafetyscanners::sensorDiagnostics(
     return;
   }
 
-  diagnostic_status.addf("Version version", "%u", header.version_version);
+  diagnostic_status.addf("Version version", "%c", header.version_version);
   diagnostic_status.addf("Version major version", "%u",
                          header.version_major_version);
   diagnostic_status.addf("Version minor version", "%u",
