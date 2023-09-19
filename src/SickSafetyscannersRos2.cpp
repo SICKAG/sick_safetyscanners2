@@ -33,6 +33,7 @@
 //----------------------------------------------------------------------
 
 #include <sick_safetyscanners2/SickSafetyscannersRos2.h>
+#include "rclcpp_components/register_node_macro.hpp"
 
 namespace sick {
 
