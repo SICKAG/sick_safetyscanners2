@@ -22,32 +22,37 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(sick_safetyscanners_base REQUIRED)
 find_package(sick_safetyscanners2_interfaces REQUIRED)
 
 set(dependencies
   rclcpp
-  rclcpp_lifecycle 
-  lifecycle_msgs 
+  rclcpp_lifecycle
+  lifecycle_msgs
   sensor_msgs
+  rclcpp_components
   sick_safetyscanners_base
   sick_safetyscanners2_interfaces
-  )
+)
 
-add_executable(sick_safetyscanners2_node 
-  src/sick_safetyscanners2_node.cpp
+add_library(sick_safetyscanners2_component SHARED
   src/SickSafetyscannersRos2.cpp
   src/utils/MessageCreator.cpp)
 
-target_link_libraries(sick_safetyscanners2_node 
-  sick_safetyscanners_base::sick_safetyscanners_base
-  ${Boost_LIBRARIES})
+ament_target_dependencies(sick_safetyscanners2_component ${dependencies})
 
-ament_target_dependencies(sick_safetyscanners2_node ${dependencies})
+add_executable(sick_safetyscanners2_node 
+  src/sick_safetyscanners2_node.cpp)
 
-target_include_directories(sick_safetyscanners2_node PUBLIC
+target_link_libraries(sick_safetyscanners2_node sick_safetyscanners2_component)
+
+target_include_directories(sick_safetyscanners2_component PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
+
+# Manually register the component
+rclcpp_components_register_nodes(sick_safetyscanners2_component "sick::SickSafetyscannersRos2")
 
   add_executable(sick_safetyscanners2_lifecycle_node 
   src/sick_safetyscanners2_lifecycle_node.cpp

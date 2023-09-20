@@ -16,6 +16,7 @@
   <depend>sensor_msgs</depend>
   <depend>sick_safetyscanners_base</depend>
   <depend>sick_safetyscanners2_interfaces</depend>
+  <depend>rclcpp_components</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

@@ -33,6 +33,7 @@
 //----------------------------------------------------------------------
 
 #include <sick_safetyscanners2/SickSafetyscannersRos2.h>
+#include "rclcpp_components/register_node_macro.hpp"
 
 namespace sick {
 
@@ -545,3 +546,4 @@ bool SickSafetyscannersRos2::getTypeCode(
 
 
 } // namespace sick
+RCLCPP_COMPONENTS_REGISTER_NODE(sick::SickSafetyscannersRos2)
