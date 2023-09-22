@@ -33,12 +33,13 @@
 //----------------------------------------------------------------------
 
 #include <sick_safetyscanners2/SickSafetyscannersRos2.h>
+
 #include "rclcpp_components/register_node_macro.hpp"
 
 namespace sick {
 
-SickSafetyscannersRos2::SickSafetyscannersRos2()
-  : Node("SickSafetyscannersRos2")
+SickSafetyscannersRos2::SickSafetyscannersRos2(const rclcpp::NodeOptions& options)
+  : Node("SickSafetyscannersRos2", options)
   , m_time_offset(0.0)
   , m_range_min(0.0)
   , m_range_max(0.0)

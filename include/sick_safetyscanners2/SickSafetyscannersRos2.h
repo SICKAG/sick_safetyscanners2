@@ -68,7 +68,7 @@ public:
   /*!
    * \brief Constructor of the ROS2 Node handling the Communication of the Sick Safetyscanner
    */
-  SickSafetyscannersRos2();
+  SickSafetyscannersRos2(const rclcpp::NodeOptions& options);
 
 private:
   // Publishers

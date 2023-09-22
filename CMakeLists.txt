@@ -36,51 +36,73 @@ set(dependencies
   sick_safetyscanners2_interfaces
 )
 
+# Component
+
 add_library(sick_safetyscanners2_component SHARED
   src/SickSafetyscannersRos2.cpp
   src/utils/MessageCreator.cpp)
 
+target_include_directories(sick_safetyscanners2_component PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+
 ament_target_dependencies(sick_safetyscanners2_component ${dependencies})
+
+target_link_libraries(sick_safetyscanners2_component
+  sick_safetyscanners_base::sick_safetyscanners_base
+  ${Boost_LIBRARIES})
+
+rclcpp_components_register_nodes(sick_safetyscanners2_component "sick::SickSafetyscannersRos2")
+
+install(TARGETS sick_safetyscanners2_component EXPORT sick_safetyscanners2_component)
+
+# Executable
 
 add_executable(sick_safetyscanners2_node 
   src/sick_safetyscanners2_node.cpp)
 
 target_link_libraries(sick_safetyscanners2_node sick_safetyscanners2_component)
 
-target_include_directories(sick_safetyscanners2_component PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-
-# Manually register the component
-rclcpp_components_register_nodes(sick_safetyscanners2_component "sick::SickSafetyscannersRos2")
-
-  add_executable(sick_safetyscanners2_lifecycle_node 
-  src/sick_safetyscanners2_lifecycle_node.cpp
-  src/SickSafetyscannersLifeCycle.cpp
-  src/utils/MessageCreator.cpp)
-
-target_link_libraries(sick_safetyscanners2_lifecycle_node 
-  sick_safetyscanners_base::sick_safetyscanners_base
-  ${Boost_LIBRARIES})
-
-ament_target_dependencies(sick_safetyscanners2_lifecycle_node ${dependencies})
-
-target_include_directories(sick_safetyscanners2_lifecycle_node PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-
-install(DIRECTORY
-launch
-DESTINATION share/${PROJECT_NAME}/
-)
-
 install(TARGETS sick_safetyscanners2_node
   EXPORT export_${PROJECT_NAME}
   DESTINATION lib/${PROJECT_NAME})
 
+# Lifecycle component
+
+add_library(sick_safetyscanners2_lifecycle_component SHARED
+  src/SickSafetyscannersLifeCycle.cpp
+  src/utils/MessageCreator.cpp)
+
+target_include_directories(sick_safetyscanners2_lifecycle_component PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+
+ament_target_dependencies(sick_safetyscanners2_lifecycle_component ${dependencies})
+
+target_link_libraries(sick_safetyscanners2_lifecycle_component
+  sick_safetyscanners_base::sick_safetyscanners_base
+  ${Boost_LIBRARIES})
+
+rclcpp_components_register_nodes(sick_safetyscanners2_lifecycle_component "sick::SickSafetyscannersLifeCycle")
+
+install(TARGETS sick_safetyscanners2_lifecycle_component EXPORT sick_safetyscanners2_lifecycle_component)
+
+# Lifecycle Executable
+
+add_executable(sick_safetyscanners2_lifecycle_node
+  src/sick_safetyscanners2_lifecycle_node.cpp)
+
+target_link_libraries(sick_safetyscanners2_lifecycle_node
+  sick_safetyscanners2_lifecycle_component)
+
 install(TARGETS sick_safetyscanners2_lifecycle_node
   EXPORT export_${PROJECT_NAME}
   DESTINATION lib/${PROJECT_NAME})
+
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}/
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

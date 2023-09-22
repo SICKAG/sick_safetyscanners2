@@ -34,13 +34,13 @@
 
 #include <sick_safetyscanners2/SickSafetyscannersLifeCycle.hpp>
 
+#include "rclcpp_components/register_node_macro.hpp"
+
 namespace sick {
 
 
-SickSafetyscannersLifeCycle::SickSafetyscannersLifeCycle(const std::string& node_name,
-                                                         bool intra_process_comms)
-  : rclcpp_lifecycle::LifecycleNode(
-      node_name, rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms))
+SickSafetyscannersLifeCycle::SickSafetyscannersLifeCycle(const rclcpp::NodeOptions& options)
+  : rclcpp_lifecycle::LifecycleNode("SickSafetyscannersLifecycle", options)
   , m_time_offset(0.0)
   , m_range_min(0.0)
   , m_range_max(0.0)
@@ -609,3 +609,5 @@ bool SickSafetyscannersLifeCycle::getTypeCode(
 
 
 } // namespace sick
+
+RCLCPP_COMPONENTS_REGISTER_NODE(sick::SickSafetyscannersLifeCycle)
