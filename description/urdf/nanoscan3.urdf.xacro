@@ -10,7 +10,6 @@
   <xacro:arg name="sim_gazebo" default="false" />
   <xacro:arg name="simulation_controllers" default="" />
 
-  <xacro:include filename="$(find sick_safetyscanners2)/description/urdf/nanoscan3/nanoscan3_macro.xacro"/>
   <xacro:include filename="$(find sick_safetyscanners2)/description/urdf/nanoscan3/nanoscan3_macro.ros2_control.xacro"/>
 
   <!-- create link fixed to the "world" -->
@@ -18,8 +17,13 @@
 
   <!-- Load robot's macro with parameters -->
   <!-- set prefix if multiple robots are used -->
-  <xacro:nanoscan3 prefix="$(arg prefix)" parent="world" >
-    <origin xyz="0 0 0" rpy="0 0 0" />          <!-- position robot in the world -->
+  <xacro:include filename="$(find sick_safetyscanners2)/description/urdf/nanoscan3/nanoscan3_macro.xacro"/>
+  <xacro:nanoscan3 
+    prefix="$(arg prefix)" 
+    name="nanoscan3"
+    parent="world" 
+    mounting_kit="true">
+    <origin xyz="0 0 0" rpy="0 0 0" />
   </xacro:nanoscan3>
 
   <xacro:nanoscan3_ros2_control
