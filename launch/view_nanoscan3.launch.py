@@ -32,8 +32,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "description_package",
             default_value="sick_safetyscanners2",
-            description="Description package of the nanoscan3. Usually the argument is not set, \
-        it enables use of a custom description.",
+            description="Package for ros2 Sick_Safetyscanners Driver.",
         )
     )
     declared_arguments.append(
@@ -45,7 +44,6 @@ def generate_launch_description():
         have to be updated.",
         )
     )
-
     declared_arguments.append(
         DeclareLaunchArgument(
             "mounting_kit",
