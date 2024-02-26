@@ -22,6 +22,9 @@
       </joint>
 
       <link name="${prefix}${name}_mount">
+        <!-- Default inertial for Gazebo - copy and edit block from 'common.xacro'
+            to get more realistic behavior -->
+        <xacro:default_inertial/>
         <visual>
           <xacro:insert_block name="origin" />
           <geometry>
@@ -64,6 +67,9 @@
     </joint>
 
     <link name="${prefix}${name}">
+      <!-- Default inertial for Gazebo - copy and edit block from 'common.xacro'
+           to get more realistic behavior -->
+      <xacro:default_inertial/>
       <visual>
         <origin xyz="${-base_x} ${-(sensor_y + base_y)} ${-sensor_z}" rpy="0 0 0" />
         <geometry>
