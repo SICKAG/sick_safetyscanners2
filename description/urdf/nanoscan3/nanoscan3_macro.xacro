@@ -3,30 +3,60 @@
 
   <xacro:include filename="$(find sick_safetyscanners2)/description/urdf/common.xacro" />
 
+  <!-- joint offsets when mounted on frame -->
+  <xacro:property name="base_x" value="0.0803"/>
+  <xacro:property name="base_y" value="-0.053"/>
+
+  <xacro:property name="sensor_y" value="${-base_y}"/>
+  <xacro:property name="sensor_z" value="0.0315"/>
+  <xacro:property name="sensor_rot_z" value="${radians(-90)}"/>
+
   <xacro:macro name="nanoscan3" params="prefix name parent *origin mounting_kit">
 
-    <link name="${prefix}base_link"/>
-    
-    <link name="${name}">
+  <!-- MOUNT -->
+    <joint name="${prefix}${name}_mount_joint" type="fixed">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent}" />
+      <child link="${prefix}${name}_mount" />
+    </joint>
+
+    <link name="${prefix}${name}_mount">
       <visual>
-        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <xacro:insert_block name="origin" />
+        <geometry>
+          <mesh filename="package://sick_safetyscanners2/description/meshes/nanoscan3/visual/mount.dae"/>
+        </geometry>
+      </visual>
+    </link>
+
+  <!-- SENSOR BASE -->
+    <joint name="${prefix}${name}_base_joint" type="fixed">
+      <origin xyz="${base_x} ${base_y} 0"/>
+      <parent link="${prefix}${name}_mount" />
+      <child link="${prefix}${name}_base" />
+    </joint>
+    
+    <link name="${prefix}${name}_base">
+      <origin xyz="${-base_x} ${-base_y} 0"/>
+    </link>
+
+  <!-- SENSOR FRAME -->
+    <joint name="${name}_joint" type="fixed">
+      <parent link="${prefix}${name}_base" />
+      <child link="${prefix}${name}" />
+      <origin xyz="0 ${sensor_y} ${sensor_z}" rpy="0 0 ${sensor_rot_z}"/>
+    </joint>
+
+    <link name="${prefix}${name}">
+      <visual>
+        <origin xyz="${-base_x} ${-(sensor_y + base_y)} ${-sensor_z}" rpy="0 0 0" />
         <geometry>
           <mesh filename="package://sick_safetyscanners2/description/meshes/nanoscan3/visual/nanoscan3.dae"/>
         </geometry>
       </visual>
     </link>
 
-    <joint name="${prefix}base_joint" type="fixed">
-      <xacro:insert_block name="origin" />
-      <parent link="${parent}" />
-      <child link="${prefix}base_link" />
-    </joint>
 
-    <joint name="${name}_joint" type="fixed">
-      <parent link="${prefix}base_link" />
-      <child link="${name}" />
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </joint>
 
   </xacro:macro>
 </robot>
