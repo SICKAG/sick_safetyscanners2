@@ -13,29 +13,39 @@
 
   <xacro:macro name="nanoscan3" params="prefix name parent *origin mounting_kit">
 
-  <!-- MOUNT -->
-    <joint name="${prefix}${name}_mount_joint" type="fixed">
-      <xacro:insert_block name="origin" />
-      <parent link="${parent}" />
-      <child link="${prefix}${name}_mount" />
-    </joint>
-
-    <link name="${prefix}${name}_mount">
-      <visual>
+    <xacro:if value="${mounting_kit}">
+      <!-- MOUNT -->
+      <joint name="${prefix}${name}_mount_joint" type="fixed">
         <xacro:insert_block name="origin" />
-        <geometry>
-          <mesh filename="package://sick_safetyscanners2/description/meshes/nanoscan3/visual/mount.dae"/>
-        </geometry>
-      </visual>
-    </link>
+        <parent link="${parent}" />
+        <child link="${prefix}${name}_mount" />
+      </joint>
 
-  <!-- SENSOR BASE -->
-    <joint name="${prefix}${name}_base_joint" type="fixed">
-      <origin xyz="${base_x} ${base_y} 0"/>
-      <parent link="${prefix}${name}_mount" />
-      <child link="${prefix}${name}_base" />
-    </joint>
+      <link name="${prefix}${name}_mount">
+        <visual>
+          <xacro:insert_block name="origin" />
+          <geometry>
+            <mesh filename="package://sick_safetyscanners2/description/meshes/nanoscan3/visual/mount.dae"/>
+          </geometry>
+        </visual>
+      </link>
+      <!-- SENSOR BASE when mounted -->
+      <joint name="${prefix}${name}_base_joint" type="fixed">
+        <origin xyz="${base_x} ${base_y} 0"/>
+        <parent link="${prefix}${name}_mount" />
+        <child link="${prefix}${name}_base" />
+      </joint>
+    </xacro:if>
     
+    <xacro:unless value="${mounting_kit}">
+      <!-- SENSOR BASE without mount-->
+      <joint name="${prefix}${name}_base_joint" type="fixed">
+        <xacro:insert_block name="origin" />
+        <parent link="${parent}" />
+        <child link="${prefix}${name}_base" />
+      </joint>
+    </xacro:unless>
+
     <link name="${prefix}${name}_base">
       <origin xyz="${-base_x} ${-base_y} 0"/>
     </link>
@@ -55,8 +65,6 @@
         </geometry>
       </visual>
     </link>
-
-
 
   </xacro:macro>
 </robot>

@@ -46,9 +46,20 @@ def generate_launch_description():
         )
     )
 
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "mounting_kit",
+            default_value='true',
+            choices=['true', 'false'],
+            description="Specifies whether the sensor is mounted on the \
+                SICK Mounting Kit 2a.",
+        )
+    )
+
     # Initialize Arguments
     description_package = LaunchConfiguration("description_package")
     prefix = LaunchConfiguration("prefix")
+    mounting_kit = LaunchConfiguration("mounting_kit")
 
     # Get URDF via xacro
     robot_description_content = Command(
@@ -62,6 +73,8 @@ def generate_launch_description():
             "prefix:=",
             prefix,
             " ",
+            "mounting_kit:=",
+            mounting_kit
         ]
     )
 
@@ -71,10 +84,6 @@ def generate_launch_description():
         [FindPackageShare(description_package), "rviz", "nanoscan3.rviz"]
     )
 
-    joint_state_publisher_node = Node(
-        package="joint_state_publisher_gui",
-        executable="joint_state_publisher_gui",
-    )
     robot_state_publisher_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
@@ -92,7 +101,6 @@ def generate_launch_description():
     return LaunchDescription(
         declared_arguments
         + [
-            joint_state_publisher_node,
             robot_state_publisher_node,
             rviz_node,
         ]

@@ -117,7 +117,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: nanoscan3_mount
+    Fixed Frame: world
     Frame Rate: 30
   Name: root
   Tools:
@@ -167,18 +167,18 @@ Visualization Manager:
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.3217223286628723
-        Y: -0.5142391920089722
-        Z: 0.45863744616508484
+        X: 0.18285433948040009
+        Y: -0.49214470386505127
+        Z: 0.3497300148010254
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.720398485660553
+      Pitch: 0.5403986573219299
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.153581619262695
+      Yaw: 5.258581161499023
     Saved: ~
 Window Geometry:
   Displays:

@@ -3,6 +3,7 @@
 
   <!-- Use this if parameters are set from the launch file, otherwise delete -->
   <xacro:arg name="prefix" default="" />
+  <xacro:arg name="mounting_kit" default="true" />
 
   <xacro:arg name="use_mock_hardware" default="false" />
   <xacro:arg name="mock_sensor_commands" default="false" />
@@ -18,11 +19,12 @@
   <!-- Load robot's macro with parameters -->
   <!-- set prefix if multiple robots are used -->
   <xacro:include filename="$(find sick_safetyscanners2)/description/urdf/nanoscan3/nanoscan3_macro.xacro"/>
+  <xacro:property name="mounting_kit" value="$(arg mounting_kit)"/>
   <xacro:nanoscan3 
     prefix="$(arg prefix)" 
     name="nanoscan3"
     parent="world" 
-    mounting_kit="true">
+    mounting_kit="${mounting_kit}">
     <origin xyz="0 0 0" rpy="0 0 0" />
   </xacro:nanoscan3>
 
