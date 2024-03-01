@@ -9,6 +9,48 @@
         <modified>Fri Mar 1 10:50:54 2024 GMT</modified>
         <up_axis>Y_UP</up_axis>
     </asset>
+    <library_effects>
+        <effect id="effect_Box002" name="effect_Box002">
+        <profile_COMMON>
+            <technique sid="common">
+            <phong>
+                <emission>
+                <color>0.0 0.0 0.0 1.0</color>
+                </emission>
+                <ambient>
+                <color>0.0 0.0 0.0 1.0</color>
+                </ambient>
+                <diffuse>
+                <color>0.2 0.2 0.2 1.0</color>
+                </diffuse>
+                <specular>
+                <color>1 1 1 1.0</color>
+                </specular>
+                <shininess>
+                <float>0.0</float>
+                </shininess>
+                <reflective>
+                <color>0.0 0.0 0.0 1.0</color>
+                </reflective>
+                <reflectivity>
+                <float>0.0</float>
+                </reflectivity>
+                <transparent>
+                <color>0.0 0.0 0.0 1.0</color>
+                </transparent>
+                <transparency>
+                <float>1.0</float>
+                </transparency>
+            </phong>
+            </technique>
+            <extra>
+            <technique profile="GOOGLEEARTH">
+                <double_sided>0</double_sided>
+            </technique>
+            </extra>
+        </profile_COMMON>
+        </effect>
+    </library_effects>
     <library_geometries>
         <geometry id="shape0-lib" name="shape0">
             <mesh>
@@ -43,10 +85,20 @@
             </mesh>
         </geometry>
     </library_geometries>
+    <library_materials>
+        <material id="mat_Box002" name="Box002">
+        <instance_effect url="#effect_Box002" />
+        </material>
+    </library_materials>
     <library_visual_scenes>
         <visual_scene id="VisualSceneNode" name="VisualScene">
             <node id="node" name="node">
                 <instance_geometry url="#shape0-lib"/>
+                <bind_material>
+                    <technique_common>
+                    <instance_material symbol="ref_Box002" target="#mat_Box002" />
+                    </technique_common>
+                </bind_material>
             </node>
         </visual_scene>
     </library_visual_scenes>

@@ -2,16 +2,8 @@
 <robot xmlns:xacro="http://wiki.ros.org/xacro" name="nanoscan3">
 
   <!-- Use this if parameters are set from the launch file, otherwise delete -->
-  <xacro:arg name="prefix" default="" />
   <xacro:arg name="mounting_kit" default="true" />
-
-  <xacro:arg name="use_mock_hardware" default="false" />
-  <xacro:arg name="mock_sensor_commands" default="false" />
-  <xacro:arg name="sim_gazebo_classic" default="false" />
   <xacro:arg name="sim_gazebo" default="false" />
-  <xacro:arg name="simulation_controllers" default="" />
-
-  <xacro:include filename="$(find sick_safetyscanners2)/description/urdf/nanoscan3/nanoscan3_macro.ros2_control.xacro"/>
 
   <!-- create link fixed to the "world" -->
   <link name="world" />
@@ -21,20 +13,10 @@
   <xacro:include filename="$(find sick_safetyscanners2)/description/urdf/nanoscan3/nanoscan3_macro.xacro"/>
   <xacro:property name="mounting_kit" value="$(arg mounting_kit)"/>
   <xacro:nanoscan3 
-    prefix="$(arg prefix)" 
     name="nanoscan3"
     parent="world" 
     mounting_kit="${mounting_kit}">
     <origin xyz="0 0 0" rpy="0 0 0" />
   </xacro:nanoscan3>
-
-  <xacro:nanoscan3_ros2_control
-    name="nanoscan3"
-    prefix="$(arg prefix)"
-    use_mock_hardware="$(arg use_mock_hardware)"
-    mock_sensor_commands="$(arg mock_sensor_commands)"
-    sim_gazebo_classic="$(arg sim_gazebo_classic)"
-    sim_gazebo="$(arg sim_gazebo)"
-    simulation_controllers="$(arg simulation_controllers)" />
 
 </robot>

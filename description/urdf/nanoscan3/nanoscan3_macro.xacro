@@ -11,62 +11,60 @@
   <xacro:property name="sensor_z" value="0.0315"/>
   <xacro:property name="sensor_rot_z" value="${radians(-90)}"/>
 
-  <xacro:macro name="nanoscan3" params="prefix name parent *origin mounting_kit">
+  <xacro:macro name="nanoscan3" params="name parent *origin mounting_kit">
 
     <xacro:if value="${mounting_kit}">
       <!-- MOUNT -->
-      <joint name="${prefix}${name}_mount_joint" type="fixed">
+      <joint name="${name}_mount_joint" type="fixed">
         <xacro:insert_block name="origin" />
         <parent link="${parent}" />
-        <child link="${prefix}${name}_mount" />
+        <child link="${name}_mount" />
       </joint>
 
-      <link name="${prefix}${name}_mount">
+      <link name="${name}_mount">
         <!-- Default inertial for Gazebo - copy and edit block from 'common.xacro'
             to get more realistic behavior -->
         <xacro:default_inertial/>
         <visual>
-          <xacro:insert_block name="origin" />
           <geometry>
             <mesh filename="package://sick_safetyscanners2/description/meshes/MountingKit_2a.dae"/>
           </geometry>
         </visual>
         <collision>
-          <xacro:insert_block name="origin" />
           <geometry>
             <mesh filename="package://sick_safetyscanners2/description/meshes/MountingKit_2a_collision.stl"/>
           </geometry>
         </collision>
       </link>
       <!-- SENSOR BASE when mounted -->
-      <joint name="${prefix}${name}_base_joint" type="fixed">
+      <joint name="${name}_base_joint" type="fixed">
         <origin xyz="${base_x} ${base_y} 0"/>
-        <parent link="${prefix}${name}_mount" />
-        <child link="${prefix}${name}_base" />
+        <parent link="${name}_mount" />
+        <child link="${name}_base" />
       </joint>
     </xacro:if>
     
     <xacro:unless value="${mounting_kit}">
       <!-- SENSOR BASE without mount-->
-      <joint name="${prefix}${name}_base_joint" type="fixed">
+      <joint name="${name}_base_joint" type="fixed">
         <xacro:insert_block name="origin" />
         <parent link="${parent}" />
-        <child link="${prefix}${name}_base" />
+        <child link="${name}_base" />
       </joint>
     </xacro:unless>
 
-    <link name="${prefix}${name}_base">
+    <link name="${name}_base">
       <origin xyz="${-base_x} ${-base_y} 0"/>
     </link>
 
   <!-- SENSOR FRAME -->
     <joint name="${name}_joint" type="fixed">
-      <parent link="${prefix}${name}_base" />
-      <child link="${prefix}${name}" />
+      <parent link="${name}_base" />
+      <child link="${name}" />
       <origin xyz="0 ${sensor_y} ${sensor_z}" rpy="0 0 ${sensor_rot_z}"/>
     </joint>
 
-    <link name="${prefix}${name}">
+    <link name="${name}">
       <!-- Default inertial for Gazebo - copy and edit block from 'common.xacro'
            to get more realistic behavior -->
       <xacro:default_inertial/>
