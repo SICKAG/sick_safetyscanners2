@@ -15,7 +15,15 @@
   <xacro:nanoscan3 
     name="nanoscan3"
     parent="world" 
-    mounting_kit="${mounting_kit}">
+    mounting_kit="${mounting_kit}"
+    ros_topic="/nanoscan3_topic"
+    update_rate="50.0"
+    min_angle="${radians(-45)}"
+    max_angle="${radians(225)}"
+    min_range="0.05"
+    max_range="10.0"
+    gaussian_noise="0.006"
+    max_beams="500">
     <origin xyz="0 0 0" rpy="0 0 0" />
   </xacro:nanoscan3>
 

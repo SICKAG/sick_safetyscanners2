@@ -2,6 +2,7 @@
 <robot xmlns:xacro="http://wiki.ros.org/xacro">
 
   <xacro:include filename="$(find sick_safetyscanners2)/description/urdf/common.xacro" />
+  <xacro:include filename="$(find sick_safetyscanners2)/description/urdf/nanoscan3/gazebo_macro.xacro" />
 
   <!-- joint offsets when mounted on frame -->
   <xacro:property name="base_x" value="0.0803"/>
@@ -11,7 +12,21 @@
   <xacro:property name="sensor_z" value="0.0315"/>
   <xacro:property name="sensor_rot_z" value="${radians(-90)}"/>
 
-  <xacro:macro name="nanoscan3" params="name parent *origin mounting_kit">
+  <xacro:macro name="nanoscan3" 
+    params="
+      name 
+      parent 
+      mounting_kit 
+      ros_topic 
+      update_rate 
+      min_angle 
+      max_angle 
+      min_range 
+      max_range 
+      gaussian_noise:=0.006 
+      max_beams:=540 
+      *origin
+    ">
 
     <xacro:if value="${mounting_kit}">
       <!-- MOUNT -->
@@ -81,6 +96,20 @@
         </geometry>
       </collision>
     </link>
+
+    <!-- gazebo integration -->
+    <xacro:sick_safetyscanners2_gazebo 
+      name="${name}" 
+      link="${name}" 
+      ros_topic="${ros_topic}"
+      update_rate="${update_rate}"
+      min_angle="${min_angle}"
+      max_angle="${max_angle}"
+      min_range="${min_range}"
+      max_range="${max_range}"
+      gaussian_noise="${gaussian_noise}"
+      max_beams="${max_beams}">
+    </xacro:sick_safetyscanners2_gazebo>
 
   </xacro:macro>
 </robot>
