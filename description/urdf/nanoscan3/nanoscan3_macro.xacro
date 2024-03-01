@@ -28,13 +28,13 @@
         <visual>
           <xacro:insert_block name="origin" />
           <geometry>
-            <mesh filename="package://sick_safetyscanners2/description/meshes/nanoscan3/visual/mount.dae"/>
+            <mesh filename="package://sick_safetyscanners2/description/meshes/MountingKit_2a.dae"/>
           </geometry>
         </visual>
         <collision>
           <xacro:insert_block name="origin" />
           <geometry>
-            <mesh filename="package://sick_safetyscanners2/description/meshes/nanoscan3/collision/mount.dae"/>
+            <mesh filename="package://sick_safetyscanners2/description/meshes/MountingKit_2a_collision.stl"/>
           </geometry>
         </collision>
       </link>
@@ -73,13 +73,13 @@
       <visual>
         <origin xyz="${-base_x} ${-(sensor_y + base_y)} ${-sensor_z}" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://sick_safetyscanners2/description/meshes/nanoscan3/visual/nanoscan3.dae"/>
+          <mesh filename="package://sick_safetyscanners2/description/meshes/NANS3.dae"/>
         </geometry>
       </visual>
       <collision>
         <origin xyz="${-base_x} ${-(sensor_y + base_y)} ${-sensor_z}" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://sick_safetyscanners2/description/meshes/nanoscan3/collision/nanoscan3.dae"/>
+          <mesh filename="package://sick_safetyscanners2/description/meshes/NANS3_collision.stl"/>
         </geometry>
       </collision>
     </link>
