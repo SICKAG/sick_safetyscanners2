@@ -42,12 +42,12 @@
         <xacro:default_inertial/>
         <visual>
           <geometry>
-            <mesh filename="package://sick_safetyscanners2/description/meshes/MountingKit_2a.dae"/>
+            <mesh filename="file://$(find sick_safetyscanners2)/description/meshes/MountingKit_2a.dae"/>
           </geometry>
         </visual>
         <collision>
           <geometry>
-            <mesh filename="package://sick_safetyscanners2/description/meshes/MountingKit_2a_collision.stl"/>
+            <mesh filename="file://$(find sick_safetyscanners2)/description/meshes/MountingKit_2a_collision.stl"/>
           </geometry>
         </collision>
       </link>
@@ -86,13 +86,13 @@
       <visual>
         <origin xyz="${-base_x} ${-(sensor_y + base_y)} ${-sensor_z}" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://sick_safetyscanners2/description/meshes/NANS3.dae"/>
+          <mesh filename="file://$(find sick_safetyscanners2)/description/meshes/NANS3.dae"/>
         </geometry>
       </visual>
       <collision>
         <origin xyz="${-base_x} ${-(sensor_y + base_y)} ${-sensor_z}" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://sick_safetyscanners2/description/meshes/NANS3_collision.stl"/>
+          <mesh filename="file://$(find sick_safetyscanners2)/description/meshes/NANS3_collision.stl"/>
         </geometry>
       </collision>
     </link>
