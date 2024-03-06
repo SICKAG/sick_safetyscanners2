@@ -44,6 +44,9 @@
           <geometry>
             <mesh filename="file://$(find sick_safetyscanners2)/description/meshes/MountingKit_2a.dae"/>
           </geometry>
+          <material name="black">
+            <color rgba="0.0 0.0 0.0 1.0"/>
+          </material>
         </visual>
         <collision>
           <geometry>
@@ -88,6 +91,9 @@
         <geometry>
           <mesh filename="file://$(find sick_safetyscanners2)/description/meshes/NANS3.dae"/>
         </geometry>
+        <material name="black">
+          <color rgba="0.0 0.0 0.0 1.0"/>
+        </material>
       </visual>
       <collision>
         <origin xyz="${-base_x} ${-(sensor_y + base_y)} ${-sensor_z}" rpy="0 0 0" />
