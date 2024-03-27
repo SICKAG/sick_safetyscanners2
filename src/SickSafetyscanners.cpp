@@ -179,9 +179,9 @@ void SickSafetyscanners::sensorDiagnostics(
                          header.serial_number_of_device);
   diagnostic_status.addf("Serial number of channel plug", "%u",
                          header.serial_number_of_channel_plug);
-  diagnostic_status.addf("App checksum", "%X",
+  diagnostic_status.addf("App checksum", "%08X",
                          m_config.m_metadata.getAppChecksum());
-  diagnostic_status.addf("Overall checksum", "%X",
+  diagnostic_status.addf("Overall checksum", "%08X",
                          m_config.m_metadata.getOverallChecksum());
   diagnostic_status.addf("Channel number", "%u", header.channel_number);
   diagnostic_status.addf("Sequence number", "%u", header.sequence_number);
