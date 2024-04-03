@@ -69,7 +69,7 @@ target_include_directories(sick_safetyscanners2_lifecycle_node PUBLIC
         $<INSTALL_INTERFACE:include>)
 
 install(DIRECTORY
-        launch
+        launch description rviz
         DESTINATION share/${PROJECT_NAME}/
 )
 
