@@ -2,6 +2,17 @@
 Changelog for package sick_safetyscanners2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* possible fix for out of range
+* Add material for correct representation in Gazebo Sim.
+* Enable workin in Gazebo under humble.
+* enabled gazebo integration in urdf
+* generated description folder using RTW
+* diagnostics for lifecycle node aswell
+* refactor: combine Node and LifeCycle node implementations
+* Contributors: Dr. Denis Štogl, Lennart Puck, Nibanovic, Rein Appeldoorn
+
 1.0.3 (2021-12-22)
 ------------------
 * Fixes unsafe pointer access in UDP callback
