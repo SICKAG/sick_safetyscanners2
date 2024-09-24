@@ -2,8 +2,8 @@
 Changelog for package sick_safetyscanners2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.4 (2024-09-24)
+------------------
 * possible fix for out of range
 * Add material for correct representation in Gazebo Sim.
 * Enable workin in Gazebo under humble.
