@@ -23,10 +23,24 @@
       max_angle 
       min_range 
       max_range 
-      gaussian_noise:=0.006 
-      max_beams:=540 
+      gaussian_noise:=0.006
+      max_beams:=540
+      simulation:=false
       *origin
     ">
+
+    <xacro:if value="${simulation}">
+      <xacro:property
+        name="file_prefix"
+        value="file://$(find sick_safetyscanners2)"
+        />
+    </xacro:if>
+    <xacro:unless value="${simulation}">
+      <xacro:property
+        name="file_prefix"
+        value="package://sick_safetyscanners2"
+      />
+    </xacro:unless>
 
     <xacro:if value="${mounting_kit}">
       <!-- MOUNT -->
@@ -42,7 +56,7 @@
         <xacro:default_inertial/>
         <visual>
           <geometry>
-            <mesh filename="file://$(find sick_safetyscanners2)/description/meshes/MountingKit_2a.dae"/>
+            <mesh filename="${file_prefix}/description/meshes/MountingKit_2a.dae"/>
           </geometry>
           <material name="black">
             <color rgba="0.0 0.0 0.0 1.0"/>
@@ -50,7 +64,7 @@
         </visual>
         <collision>
           <geometry>
-            <mesh filename="file://$(find sick_safetyscanners2)/description/meshes/MountingKit_2a_collision.stl"/>
+            <mesh filename="${file_prefix}/description/meshes/MountingKit_2a_collision.stl"/>
           </geometry>
         </collision>
       </link>
@@ -89,7 +103,7 @@
       <visual>
         <origin xyz="${-base_x} ${-(sensor_y + base_y)} ${-sensor_z}" rpy="0 0 0" />
         <geometry>
-          <mesh filename="file://$(find sick_safetyscanners2)/description/meshes/NANS3.dae"/>
+          <mesh filename="${file_prefix}/description/meshes/NANS3.dae"/>
         </geometry>
         <material name="black">
           <color rgba="0.0 0.0 0.0 1.0"/>
@@ -98,7 +112,7 @@
       <collision>
         <origin xyz="${-base_x} ${-(sensor_y + base_y)} ${-sensor_z}" rpy="0 0 0" />
         <geometry>
-          <mesh filename="file://$(find sick_safetyscanners2)/description/meshes/NANS3_collision.stl"/>
+          <mesh filename="${file_prefix}/description/meshes/NANS3_collision.stl"/>
         </geometry>
       </collision>
     </link>
