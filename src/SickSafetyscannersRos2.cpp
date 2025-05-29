@@ -106,15 +106,14 @@ void SickSafetyscannersRos2::receiveUDPPaket(
     }
     if(m_output_paths_publisher->get_subscription_count() > 0){
       auto output_paths = m_config.m_msg_creator->createOutputPathsMsg(data);
-      m_output_paths_publisher->publish(std::move(output_paths));  
+      m_output_paths_publisher->publish(std::move(output_paths));
     }
   }
 
   auto raw_msg = m_config.m_msg_creator->createRawDataMsg(data);
   m_last_raw_msg = *raw_msg;
-  // make unique_ptr to publish raw data (copy)
   if(m_raw_data_publisher->get_subscription_count() > 0) {
-    m_raw_data_publisher->publish(std::move(raw_msg));  
+    m_raw_data_publisher->publish(std::move(raw_msg));
   }
 }
 } // namespace sick
