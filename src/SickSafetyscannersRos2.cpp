@@ -91,19 +91,27 @@ void SickSafetyscannersRos2::receiveUDPPaket(
 
   if (!data.getMeasurementDataPtr()->isEmpty() &&
       !data.getDerivedValuesPtr()->isEmpty()) {
-    auto scan = m_config.m_msg_creator->createLaserScanMsg(data, this->now());
-    m_diagnosed_laser_scan_publisher->publish(scan);
-
-    sick_safetyscanners2_interfaces::msg::ExtendedLaserScan extended_scan =
-        m_config.m_msg_creator->createExtendedLaserScanMsg(data, this->now());
-
-    m_extended_laser_scan_publisher->publish(extended_scan);
-
-    auto output_paths = m_config.m_msg_creator->createOutputPathsMsg(data);
-    m_output_paths_publisher->publish(output_paths);
+    if(m_diagnosed_laser_scan_publisher->getPublisher()->get_subscription_count() > 0){
+      auto scan = m_config.m_msg_creator->createLaserScanMsg(data, this->now());
+      m_diagnosed_laser_scan_publisher->publish(std::move(scan));
+    }
+    
+    if(m_extended_laser_scan_publisher->get_subscription_count() > 0){
+      auto extended_scan =
+          m_config.m_msg_creator->createExtendedLaserScanMsg(data, this->now());
+      m_extended_laser_scan_publisher->publish(std::move(extended_scan));
+    }
+    if(m_output_paths_publisher->get_subscription_count() > 0){
+      auto output_paths = m_config.m_msg_creator->createOutputPathsMsg(data);
+      m_output_paths_publisher->publish(std::move(output_paths));  
+    }
   }
 
-  m_last_raw_msg = m_config.m_msg_creator->createRawDataMsg(data);
-  m_raw_data_publisher->publish(m_last_raw_msg);
+  auto raw_msg = m_config.m_msg_creator->createRawDataMsg(data);
+  m_last_raw_msg = *raw_msg;
+  // make unique_ptr to publish raw data (copy)
+  if(m_raw_data_publisher->get_subscription_count() > 0) {
+    m_raw_data_publisher->publish(std::move(raw_msg));  
+  }
 }
 } // namespace sick
