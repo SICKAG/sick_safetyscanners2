@@ -55,23 +55,6 @@ add_executable(sick_safetyscanners2_node
 target_link_libraries(sick_safetyscanners2_node
         sick_safetyscanners2)
 
-
-# add_executable(sick_safetyscanners2_node
-#         src/sick_safetyscanners2_node.cpp
-#         src/SickSafetyscanners.cpp
-#         src/SickSafetyscannersRos2.cpp
-#         src/utils/MessageCreator.cpp)
-
-# target_link_libraries(sick_safetyscanners2_node
-#         sick_safetyscanners_base::sick_safetyscanners_base
-#         ${Boost_LIBRARIES})
-
-# ament_target_dependencies(sick_safetyscanners2_node ${dependencies})
-
-# target_include_directories(sick_safetyscanners2_node PUBLIC
-#         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#         $<INSTALL_INTERFACE:include>)
-
 add_library(sick_safetyscanners2_lifecycle SHARED
         src/SickSafetyscannersLifeCycle.cpp
         src/SickSafetyscanners.cpp
@@ -89,22 +72,6 @@ add_executable(sick_safetyscanners2_lifecycle_node
 target_link_libraries(sick_safetyscanners2_lifecycle_node
         sick_safetyscanners2_lifecycle)
 
-# add_executable(sick_safetyscanners2_lifecycle_node
-#         src/sick_safetyscanners2_lifecycle_node.cpp
-#         src/SickSafetyscanners.cpp
-#         src/SickSafetyscannersLifeCycle.cpp
-#         src/utils/MessageCreator.cpp)
-
-# target_link_libraries(sick_safetyscanners2_lifecycle_node
-#         sick_safetyscanners_base::sick_safetyscanners_base
-#         ${Boost_LIBRARIES})
-
-# ament_target_dependencies(sick_safetyscanners2_lifecycle_node ${dependencies})
-
-# target_include_directories(sick_safetyscanners2_lifecycle_node PUBLIC
-#         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#         $<INSTALL_INTERFACE:include>)
-
 rclcpp_components_register_nodes(sick_safetyscanners2 "sick::SickSafetyscannersRos2")
 rclcpp_components_register_nodes(sick_safetyscanners2_lifecycle "sick::SickSafetyscannersLifeCycle")
 
@@ -112,14 +79,6 @@ install(DIRECTORY
         launch description rviz
         DESTINATION share/${PROJECT_NAME}/
 )
-
-# install(TARGETS sick_safetyscanners2_node
-#         EXPORT export_${PROJECT_NAME}
-#         DESTINATION lib/${PROJECT_NAME})
-
-# install(TARGETS sick_safetyscanners2_lifecycle_node
-#         EXPORT export_${PROJECT_NAME}
-#         DESTINATION lib/${PROJECT_NAME})
 
 if (BUILD_TESTING)
     find_package(ament_lint_auto REQUIRED)
@@ -131,11 +90,6 @@ if (BUILD_TESTING)
     #set(ament_cmake_cpplint_FOUND TRUE)
     ament_lint_auto_find_test_dependencies()
 endif ()
-
-#TODO lookup what this does
-# For message creation,if used in this message
-# ament_export_dependencies(${dependencies})
-
 
 install(
   TARGETS 
