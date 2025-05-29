@@ -36,25 +36,27 @@
 
 namespace sick {
 
-SickSafetyscannersRos2::SickSafetyscannersRos2()
-    : Node("SickSafetyscannersRos2") {
+SickSafetyscannersRos2::SickSafetyscannersRos2(const rclcpp::NodeOptions& options):
+    Node("SickSafetyscannersRos2", options) {
   RCLCPP_INFO(this->get_logger(), "Initializing SickSafetyscannersRos2 Node");
-
+  
   // read parameters!
   initializeParameters(*this);
   loadParameters(*this);
 
   // init publishers and services
+  // set QOS profile for publishers explicitly
+  auto qos = rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_sensor_data), rmw_qos_profile_sensor_data).keep_last(1);
   m_laser_scan_publisher =
-      this->create_publisher<sensor_msgs::msg::LaserScan>("scan", 1);
+      this->create_publisher<sensor_msgs::msg::LaserScan>("scan", qos);
   m_extended_laser_scan_publisher = this->create_publisher<
       sick_safetyscanners2_interfaces::msg::ExtendedLaserScan>("extended_scan",
-                                                               1);
+                                                               qos);
   m_output_paths_publisher =
       this->create_publisher<sick_safetyscanners2_interfaces::msg::OutputPaths>(
-          "output_paths", 1);
+          "output_paths", qos);
   m_raw_data_publisher = this->create_publisher<
-      sick_safetyscanners2_interfaces::msg::RawMicroScanData>("raw_data", 1);
+      sick_safetyscanners2_interfaces::msg::RawMicroScanData>("raw_data", qos);
 
   m_field_data_service =
       this->create_service<sick_safetyscanners2_interfaces::srv::FieldData>(
@@ -80,6 +82,7 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
 
   RCLCPP_INFO(this->get_logger(), "Node Configured and running");
 }
+
 
 void SickSafetyscannersRos2::receiveUDPPaket(
     const sick::datastructure::Data &data) {
@@ -115,3 +118,6 @@ void SickSafetyscannersRos2::receiveUDPPaket(
   }
 }
 } // namespace sick
+
+#include "rclcpp_components/register_node_macro.hpp"
+RCLCPP_COMPONENTS_REGISTER_NODE(sick::SickSafetyscannersRos2)

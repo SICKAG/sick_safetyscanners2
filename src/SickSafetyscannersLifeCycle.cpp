@@ -36,13 +36,9 @@
 
 namespace sick {
 
-SickSafetyscannersLifeCycle::SickSafetyscannersLifeCycle(
-    const std::string &node_name, bool intra_process_comms)
-    : rclcpp_lifecycle::LifecycleNode(
-          node_name,
-          rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms)) {
+SickSafetyscannersLifeCycle::SickSafetyscannersLifeCycle(const rclcpp::NodeOptions& options):
+    rclcpp_lifecycle::LifecycleNode("SickSafetyscannersLifecycle", options) {
   RCLCPP_INFO(this->get_logger(), "Initializing SickSafetyscannersLifeCycle ");
-
   // read parameters!
   initializeParameters(*this);
   loadParameters(*this);
@@ -53,16 +49,18 @@ SickSafetyscannersLifeCycle::on_configure(const rclcpp_lifecycle::State &) {
   RCLCPP_INFO(this->get_logger(), "on_configure()...");
 
   // init publishers and services
+  // set QOS profile for publishers explicitly
+  auto qos = rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_sensor_data), rmw_qos_profile_sensor_data).keep_last(1);
   m_laser_scan_publisher =
-      this->create_publisher<sensor_msgs::msg::LaserScan>("scan", 1);
+      this->create_publisher<sensor_msgs::msg::LaserScan>("scan", qos);
   m_extended_laser_scan_publisher = this->create_publisher<
       sick_safetyscanners2_interfaces::msg::ExtendedLaserScan>("extended_scan",
-                                                               1);
+                                                               qos);
   m_output_paths_publisher =
       this->create_publisher<sick_safetyscanners2_interfaces::msg::OutputPaths>(
-          "output_paths", 1);
+          "output_paths", qos);
   m_raw_data_publisher = this->create_publisher<
-      sick_safetyscanners2_interfaces::msg::RawMicroScanData>("raw_data", 1);
+      sick_safetyscanners2_interfaces::msg::RawMicroScanData>("raw_data", qos);
 
   m_field_data_service =
       this->create_service<sick_safetyscanners2_interfaces::srv::FieldData>(
@@ -181,3 +179,6 @@ void SickSafetyscannersLifeCycle::receiveUDPPaket(
   }
 }
 } // namespace sick
+
+#include "rclcpp_components/register_node_macro.hpp"
+RCLCPP_COMPONENTS_REGISTER_NODE(sick::SickSafetyscannersLifeCycle)

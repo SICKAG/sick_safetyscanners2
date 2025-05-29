@@ -45,7 +45,9 @@ int main(int argc, char **argv) {
   (void)argv;
 
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<sick::SickSafetyscannersRos2>());
+  rclcpp::NodeOptions options;
+  auto node = std::make_shared<sick::SickSafetyscannersRos2>(options);
+  rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;
 }

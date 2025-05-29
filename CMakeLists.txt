@@ -20,6 +20,7 @@ find_package(ament_cmake REQUIRED)
 find_package(Boost REQUIRED COMPONENTS chrono)
 find_package(diagnostic_updater REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
@@ -29,6 +30,7 @@ find_package(sick_safetyscanners2_interfaces REQUIRED)
 set(dependencies
         diagnostic_updater
         rclcpp
+        rclcpp_components
         rclcpp_lifecycle
         lifecycle_msgs
         sensor_msgs
@@ -36,50 +38,88 @@ set(dependencies
         sick_safetyscanners2_interfaces
 )
 
-add_executable(sick_safetyscanners2_node
-        src/sick_safetyscanners2_node.cpp
+add_library(sick_safetyscanners2 SHARED
         src/SickSafetyscanners.cpp
         src/SickSafetyscannersRos2.cpp
         src/utils/MessageCreator.cpp)
-
-target_link_libraries(sick_safetyscanners2_node
+target_link_libraries(sick_safetyscanners2
         sick_safetyscanners_base::sick_safetyscanners_base
         ${Boost_LIBRARIES})
+ament_target_dependencies(sick_safetyscanners2 ${dependencies})
+target_include_directories(sick_safetyscanners2 PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>)
 
-ament_target_dependencies(sick_safetyscanners2_node ${dependencies})
+add_executable(sick_safetyscanners2_node
+        src/sick_safetyscanners2_node.cpp)
+target_link_libraries(sick_safetyscanners2_node
+        sick_safetyscanners2)
 
-target_include_directories(sick_safetyscanners2_node PUBLIC
+
+# add_executable(sick_safetyscanners2_node
+#         src/sick_safetyscanners2_node.cpp
+#         src/SickSafetyscanners.cpp
+#         src/SickSafetyscannersRos2.cpp
+#         src/utils/MessageCreator.cpp)
+
+# target_link_libraries(sick_safetyscanners2_node
+#         sick_safetyscanners_base::sick_safetyscanners_base
+#         ${Boost_LIBRARIES})
+
+# ament_target_dependencies(sick_safetyscanners2_node ${dependencies})
+
+# target_include_directories(sick_safetyscanners2_node PUBLIC
+#         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#         $<INSTALL_INTERFACE:include>)
+
+add_library(sick_safetyscanners2_lifecycle SHARED
+        src/SickSafetyscannersLifeCycle.cpp
+        src/SickSafetyscanners.cpp
+        src/utils/MessageCreator.cpp)
+target_link_libraries(sick_safetyscanners2_lifecycle
+        sick_safetyscanners_base::sick_safetyscanners_base
+        ${Boost_LIBRARIES})
+ament_target_dependencies(sick_safetyscanners2_lifecycle ${dependencies})
+target_include_directories(sick_safetyscanners2_lifecycle PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>)
 
 add_executable(sick_safetyscanners2_lifecycle_node
-        src/sick_safetyscanners2_lifecycle_node.cpp
-        src/SickSafetyscanners.cpp
-        src/SickSafetyscannersLifeCycle.cpp
-        src/utils/MessageCreator.cpp)
-
+        src/sick_safetyscanners2_lifecycle_node.cpp)
 target_link_libraries(sick_safetyscanners2_lifecycle_node
-        sick_safetyscanners_base::sick_safetyscanners_base
-        ${Boost_LIBRARIES})
+        sick_safetyscanners2_lifecycle)
 
-ament_target_dependencies(sick_safetyscanners2_lifecycle_node ${dependencies})
+# add_executable(sick_safetyscanners2_lifecycle_node
+#         src/sick_safetyscanners2_lifecycle_node.cpp
+#         src/SickSafetyscanners.cpp
+#         src/SickSafetyscannersLifeCycle.cpp
+#         src/utils/MessageCreator.cpp)
 
-target_include_directories(sick_safetyscanners2_lifecycle_node PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>)
+# target_link_libraries(sick_safetyscanners2_lifecycle_node
+#         sick_safetyscanners_base::sick_safetyscanners_base
+#         ${Boost_LIBRARIES})
+
+# ament_target_dependencies(sick_safetyscanners2_lifecycle_node ${dependencies})
+
+# target_include_directories(sick_safetyscanners2_lifecycle_node PUBLIC
+#         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#         $<INSTALL_INTERFACE:include>)
+
+rclcpp_components_register_nodes(sick_safetyscanners2 "sick::SickSafetyscannersRos2")
+rclcpp_components_register_nodes(sick_safetyscanners2_lifecycle "sick::SickSafetyscannersLifeCycle")
 
 install(DIRECTORY
         launch description rviz
         DESTINATION share/${PROJECT_NAME}/
 )
 
-install(TARGETS sick_safetyscanners2_node
-        EXPORT export_${PROJECT_NAME}
-        DESTINATION lib/${PROJECT_NAME})
+# install(TARGETS sick_safetyscanners2_node
+#         EXPORT export_${PROJECT_NAME}
+#         DESTINATION lib/${PROJECT_NAME})
 
-install(TARGETS sick_safetyscanners2_lifecycle_node
-        EXPORT export_${PROJECT_NAME}
-        DESTINATION lib/${PROJECT_NAME})
+# install(TARGETS sick_safetyscanners2_lifecycle_node
+#         EXPORT export_${PROJECT_NAME}
+#         DESTINATION lib/${PROJECT_NAME})
 
 if (BUILD_TESTING)
     find_package(ament_lint_auto REQUIRED)
@@ -94,6 +134,36 @@ endif ()
 
 #TODO lookup what this does
 # For message creation,if used in this message
-ament_export_dependencies(${dependencies})
+# ament_export_dependencies(${dependencies})
+
+
+install(
+  TARGETS 
+  sick_safetyscanners2
+  sick_safetyscanners2_lifecycle
+  EXPORT  sick_safetyscanners2_target   # target for ament_export_targets
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  INCLUDES DESTINATION include  # for ament_export_include_directories
+)
+
+# Install executable
+install(
+  TARGETS 
+  sick_safetyscanners2_node
+  sick_safetyscanners2_lifecycle_node
+  RUNTIME DESTINATION lib/sick_safetyscanners2  # ros2 run <pkg> <exe>
+)
+
+# install header files
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
+
+ament_export_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include) # this path is automatically added to the include path of the library
+ament_export_targets(sick_safetyscanners2_target) # target name
+ament_export_libraries(sick_safetyscanners2 sick_safetyscanners2_lifecycle)
+ament_export_dependencies(${dependencies})  # transitive dependencies for other packages
 
 ament_package()
