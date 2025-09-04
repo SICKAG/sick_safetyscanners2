@@ -37,7 +37,7 @@
 namespace sick {
 
 SickSafetyscannersLifeCycle::SickSafetyscannersLifeCycle(const rclcpp::NodeOptions& options):
-    rclcpp_lifecycle::LifecycleNode("SickSafetyscannersLifecycle", options) {
+    rclcpp_lifecycle::LifecycleNode("SickSafetyscannersLifecycle", options), m_last_scan_time(this->get_clock()->now()) {
   RCLCPP_INFO(this->get_logger(), "Initializing SickSafetyscannersLifeCycle ");
   // read parameters!
   initializeParameters(*this);
@@ -91,6 +91,16 @@ SickSafetyscannersLifeCycle::on_activate(const rclcpp_lifecycle::State &) {
   m_output_paths_publisher->on_activate();
   m_raw_data_publisher->on_activate();
 
+  rii_common_utils::DiagnosticUpdaterBuilder diagnostic_updater_builder(this);
+  m_diagnostic_updater = diagnostic_updater_builder.SetPeriodInSec(1.0)
+                            .SetHardwareID("sick_safetyscanner")
+                            .EnableStatusUpdate()
+                            .EnableFrequencyUpdate(20.)
+                            .RegisterCustomUpdaterFunction(
+                              "SICK Status",
+                              std::bind(&SickSafetyscannersLifeCycle::customDiagnostic, this, std::placeholders::_1))
+                            .Build();
+
   startCommunication(this, m_laser_scan_publisher);
 
   RCLCPP_INFO(this->get_logger(), "Node activated, device is running...");
@@ -105,6 +115,7 @@ SickSafetyscannersLifeCycle::on_deactivate(const rclcpp_lifecycle::State &) {
 
   stopCommunication();
 
+  m_diagnostic_updater.reset();
   m_laser_scan_publisher->on_deactivate();
   m_extended_laser_scan_publisher->on_deactivate();
   m_output_paths_publisher->on_deactivate();
@@ -139,6 +150,28 @@ SickSafetyscannersLifeCycle::on_shutdown(const rclcpp_lifecycle::State &) {
       CallbackReturn::SUCCESS;
 }
 
+void SickSafetyscannersLifeCycle::customDiagnostic(diagnostic_updater::DiagnosticStatusWrapper& status)
+{
+  std::lock_guard<std::mutex> lock(m_data_mutex);
+
+  const auto time_diff = this->get_clock()->now() - m_last_scan_time;
+
+  if (time_diff.seconds() > 2.0) {
+      status.summary(diagnostic_msgs::msg::DiagnosticStatus::STALE, "No recent data");
+  } else {
+      status.summary(diagnostic_msgs::msg::DiagnosticStatus::OK, "Operating normally");
+  }
+
+  status.add("Node Name", this->get_name());
+  status.add("Namespace", this->get_namespace());
+  
+  for (size_t i = 0; i < m_field_data_is_safe.size(); ++i) {
+    std::string field_name = "Field " + std::to_string(i + 1);
+    std::string field_status = m_field_data_is_safe[i] ? "Safe" : "Breached";
+    status.add(field_name, field_status);
+  }
+}
+
 void SickSafetyscannersLifeCycle::receiveUDPPaket(
     const sick::datastructure::Data &data) {
   if (!m_config.m_msg_creator) {
@@ -149,6 +182,15 @@ void SickSafetyscannersLifeCycle::receiveUDPPaket(
 
   if (!data.getMeasurementDataPtr()->isEmpty() &&
       !data.getDerivedValuesPtr()->isEmpty()) {
+
+    {
+      std::lock_guard<std::mutex> lock(m_data_mutex);
+      m_last_scan_time = this->now();
+
+      if (data.getApplicationDataPtr() && !data.getApplicationDataPtr()->isEmpty()) {
+        m_field_data_is_safe = data.getApplicationDataPtr()->getOutputs().getEvalOutIsSafeVector();
+      }
+    }
     if(m_diagnosed_laser_scan_publisher->getPublisher()->get_subscription_count() > 0){
       auto scan = m_config.m_msg_creator->createLaserScanMsg(data, this->now());
       m_diagnosed_laser_scan_publisher->publish(std::move(scan));
@@ -163,6 +205,12 @@ void SickSafetyscannersLifeCycle::receiveUDPPaket(
       auto output_paths = m_config.m_msg_creator->createOutputPathsMsg(data);
       m_output_paths_publisher->publish(std::move(output_paths));
     }
+
+    if (m_diagnostic_updater) {
+      m_diagnostic_updater->TickFrequencyStatus();
+      m_diagnostic_updater->SetStatusOK("OK");
+    }
+
   }
 
   auto raw_msg = m_config.m_msg_creator->createRawDataMsg(data);
