@@ -158,6 +158,7 @@ void SickSafetyscannersLifeCycle::customDiagnostic(diagnostic_updater::Diagnosti
 
   if (time_diff.seconds() > 2.0) {
       status.summary(diagnostic_msgs::msg::DiagnosticStatus::STALE, "No recent data");
+      m_diagnostic_updater->SetStatusERROR("2D laser scanner disconnected or no data received for more than 2 seconds.");
   } else {
       status.summary(diagnostic_msgs::msg::DiagnosticStatus::OK, "Operating normally");
   }
