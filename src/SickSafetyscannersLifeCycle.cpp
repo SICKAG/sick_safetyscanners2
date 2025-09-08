@@ -95,7 +95,7 @@ SickSafetyscannersLifeCycle::on_activate(const rclcpp_lifecycle::State &) {
   m_diagnostic_updater = diagnostic_updater_builder.SetPeriodInSec(1.0)
                             .SetHardwareID("sick_safetyscanner")
                             .EnableStatusUpdate()
-                            .EnableFrequencyUpdate(20.)
+                            .EnableFrequencyUpdate(34.0)
                             .RegisterCustomUpdaterFunction(
                               "SICK Status",
                               std::bind(&SickSafetyscannersLifeCycle::customDiagnostic, this, std::placeholders::_1))
@@ -164,12 +164,12 @@ void SickSafetyscannersLifeCycle::customDiagnostic(diagnostic_updater::Diagnosti
 
   status.add("Node Name", this->get_name());
   status.add("Namespace", this->get_namespace());
-  
-  for (size_t i = 0; i < m_field_data_is_safe.size(); ++i) {
-    std::string field_name = "Field " + std::to_string(i + 1);
-    std::string field_status = m_field_data_is_safe[i] ? "Safe" : "Breached";
-    status.add(field_name, field_status);
-  }
+
+  // for (size_t i = 0; i < m_field_data_is_safe.size(); ++i) {
+  //   std::string field_name = "Field " + std::to_string(i + 1);
+  //   std::string field_status = m_field_data_is_safe[i] ? "Safe" : "Breached";
+  //   status.add(field_name, field_status);
+  // }
 }
 
 void SickSafetyscannersLifeCycle::receiveUDPPaket(
