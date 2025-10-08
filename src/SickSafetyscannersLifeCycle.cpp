@@ -36,10 +36,10 @@
 
 namespace sick {
 
-SickSafetyscannersLifeCycle::SickSafetyscannersLifeCycle(const rclcpp::NodeOptions& options):
-    rclcpp_lifecycle::LifecycleNode("SickSafetyscannersLifecycle", options), m_last_scan_time(this->get_clock()->now()) {
+SickSafetyscannersLifeCycle::SickSafetyscannersLifeCycle(const rclcpp::NodeOptions& options)
+    : rclcpp_lifecycle::LifecycleNode("SickSafetyscannersLifecycle", options),
+      m_last_scan_time(std::chrono::steady_clock::now()) {
   RCLCPP_INFO(this->get_logger(), "Initializing SickSafetyscannersLifeCycle ");
-  // read parameters!
   initializeParameters(*this);
   loadParameters(*this);
 }
@@ -154,9 +154,12 @@ void SickSafetyscannersLifeCycle::customDiagnostic(diagnostic_updater::Diagnosti
 {
   std::lock_guard<std::mutex> lock(m_data_mutex);
 
-  const auto time_diff = this->get_clock()->now() - m_last_scan_time;
+  const auto now = std::chrono::steady_clock::now();
+  const auto time_diff = now - m_last_scan_time;
+  const auto time_diff_seconds = std::chrono::duration_cast<std::chrono::duration<double>>(time_diff);
 
-  if (time_diff.seconds() > 2.0) {
+
+  if (time_diff_seconds > SCAN_TIMEOUT) {
       status.summary(diagnostic_msgs::msg::DiagnosticStatus::STALE, "No recent data");
       m_diagnostic_updater->SetStatusERROR("2D laser scanner disconnected or no data received for more than 2 seconds.");
   } else {
@@ -186,7 +189,7 @@ void SickSafetyscannersLifeCycle::receiveUDPPaket(
 
     {
       std::lock_guard<std::mutex> lock(m_data_mutex);
-      m_last_scan_time = this->now();
+      m_last_scan_time = std::chrono::steady_clock::now();
 
       if (data.getApplicationDataPtr() && !data.getApplicationDataPtr()->isEmpty()) {
         m_field_data_is_safe = data.getApplicationDataPtr()->getOutputs().getEvalOutIsSafeVector();

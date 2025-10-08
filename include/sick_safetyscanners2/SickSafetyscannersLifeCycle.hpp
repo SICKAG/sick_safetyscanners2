@@ -59,6 +59,7 @@
 #include <string>
 #include <atomic>
 #include <mutex>
+#include <chrono>
 #include <vector>
 
 #include "./SickSafetyscanners.hpp"
@@ -110,7 +111,9 @@ private:
   void customDiagnostic(diagnostic_updater::DiagnosticStatusWrapper& status);
   std::shared_ptr<sick::SickSafetyscanners> m_sick_safetyscanners;
 
-  rclcpp::Time m_last_scan_time;
+  std::chrono::steady_clock::time_point m_last_scan_time;
+  static constexpr std::chrono::seconds SCAN_TIMEOUT{2};
+
   std::vector<bool> m_field_data_is_safe;
   std::mutex m_data_mutex;
 
