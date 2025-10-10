@@ -57,8 +57,14 @@
 #include <sensor_msgs/msg/laser_scan.hpp>
 
 #include <string>
+#include <atomic>
+#include <mutex>
+#include <chrono>
+#include <vector>
 
 #include "./SickSafetyscanners.hpp"
+
+#include "rii_common_utils/diagnostic_updater.h"
 
 namespace sick {
 
@@ -99,6 +105,18 @@ private:
   // Services
   rclcpp::Service<sick_safetyscanners2_interfaces::srv::FieldData>::SharedPtr
       m_field_data_service;
+
+  // Diagnostics
+  std::unique_ptr<rii_common_utils::DiagnosticUpdater> m_diagnostic_updater;
+  void customDiagnostic(diagnostic_updater::DiagnosticStatusWrapper& status);
+  std::shared_ptr<sick::SickSafetyscanners> m_sick_safetyscanners;
+
+  std::chrono::steady_clock::time_point m_last_scan_time;
+  static constexpr std::chrono::seconds SCAN_TIMEOUT{2};
+
+  std::vector<bool> m_field_data_is_safe;
+  std::mutex m_data_mutex;
+
 
   // Callback function passed to the device for handling the received packages
   void receiveUDPPaket(const sick::datastructure::Data &data);

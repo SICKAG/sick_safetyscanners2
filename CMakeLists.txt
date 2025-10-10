@@ -24,6 +24,7 @@ find_package(rclcpp_components REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(rii_common_utils REQUIRED)
 find_package(sick_safetyscanners_base REQUIRED)
 find_package(sick_safetyscanners2_interfaces REQUIRED)
 
@@ -34,6 +35,7 @@ set(dependencies
         rclcpp_lifecycle
         lifecycle_msgs
         sensor_msgs
+        rii_common_utils
         sick_safetyscanners_base
         sick_safetyscanners2_interfaces
 )

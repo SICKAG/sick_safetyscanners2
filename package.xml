@@ -19,6 +19,7 @@
   <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
   <depend>rclcpp_lifecycle</depend>
+  <depend>rii_common_utils</depend>
   <depend>sensor_msgs</depend>
   <depend>sick_safetyscanners_base</depend>
   <depend>sick_safetyscanners2_interfaces</depend>
