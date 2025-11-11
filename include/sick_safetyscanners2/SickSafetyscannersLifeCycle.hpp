@@ -69,6 +69,14 @@ public:
    * \brief Constructor of the ROS2 Node handling the Communication of the Sick
    * Safetyscanner
    */
+
+  explicit SickSafetyscannersLifeCycle(const std::string &node_name,
+                                       bool intra_process_comms = false);
+
+  /*!
+   * \brief Constructor of the ROS2 Node handling the Communication of the Sick
+   * Safetyscanner
+   */
   explicit SickSafetyscannersLifeCycle(const rclcpp::NodeOptions& options);
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn

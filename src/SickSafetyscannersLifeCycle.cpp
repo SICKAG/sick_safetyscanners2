@@ -36,8 +36,20 @@
 
 namespace sick {
 
-SickSafetyscannersLifeCycle::SickSafetyscannersLifeCycle(const rclcpp::NodeOptions& options):
-    rclcpp_lifecycle::LifecycleNode("SickSafetyscannersLifecycle", options) {
+SickSafetyscannersLifeCycle::SickSafetyscannersLifeCycle(
+    const std::string &node_name, bool intra_process_comms)
+    : rclcpp_lifecycle::LifecycleNode(
+          node_name,
+          rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms)) {
+  RCLCPP_INFO(this->get_logger(), "Initializing SickSafetyscannersLifeCycle ");
+  // read parameters!
+  initializeParameters(*this);
+  loadParameters(*this);
+}
+
+SickSafetyscannersLifeCycle::SickSafetyscannersLifeCycle(const rclcpp::NodeOptions& options)
+  : rclcpp_lifecycle::LifecycleNode("SickSafetyscannersLifecycle", options)
+{
   RCLCPP_INFO(this->get_logger(), "Initializing SickSafetyscannersLifeCycle ");
   // read parameters!
   initializeParameters(*this);
