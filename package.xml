@@ -6,8 +6,11 @@
   <description>ROS2 Driver for the SICK safetyscanners</description>
   <maintainer email="eichmann@fzi.de">Christian Eichmann</maintainer>
   <maintainer email="trapp@fzi.de">Thomas Trapp</maintainer>
+
+  <license file="LICENSE.txt">Apache-2.0</license>
+  <license file="LICENSES/BSD-3-Clause.txt">BSD-3-Clause</license>
+
   <author>Lennart Puck</author>
-  <license>ALv2</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

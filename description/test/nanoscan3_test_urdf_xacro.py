@@ -1,5 +1,6 @@
 # Copyright (c) 2024, Stogl Robotics Consulting UG (haftungsbeschränkt) (template)
 # Copyright (c) 2022 FZI Forschungszentrum Informatik
+# SPDX-License-Identifier: BSD-3-Clause
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
