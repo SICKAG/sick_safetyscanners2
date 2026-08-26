@@ -36,8 +36,8 @@
 
 namespace sick {
 
-SickSafetyscannersRos2::SickSafetyscannersRos2()
-    : Node("SickSafetyscannersRos2") {
+SickSafetyscannersRos2::SickSafetyscannersRos2(const rclcpp::NodeOptions& options):
+    Node("SickSafetyscannersRos2", options) {
   RCLCPP_INFO(this->get_logger(), "Initializing SickSafetyscannersRos2 Node");
 
   // read parameters!
@@ -45,16 +45,18 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
   loadParameters(*this);
 
   // init publishers and services
+  // set QOS profile for publishers explicitly
+  auto qos = rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_sensor_data), rmw_qos_profile_sensor_data).keep_last(1);
   m_laser_scan_publisher =
-      this->create_publisher<sensor_msgs::msg::LaserScan>("scan", 1);
+      this->create_publisher<sensor_msgs::msg::LaserScan>("scan", qos);
   m_extended_laser_scan_publisher = this->create_publisher<
       sick_safetyscanners2_interfaces::msg::ExtendedLaserScan>("extended_scan",
-                                                               1);
+                                                               qos);
   m_output_paths_publisher =
       this->create_publisher<sick_safetyscanners2_interfaces::msg::OutputPaths>(
-          "output_paths", 1);
+          "output_paths", qos);
   m_raw_data_publisher = this->create_publisher<
-      sick_safetyscanners2_interfaces::msg::RawMicroScanData>("raw_data", 1);
+      sick_safetyscanners2_interfaces::msg::RawMicroScanData>("raw_data", qos);
 
   m_field_data_service =
       this->create_service<sick_safetyscanners2_interfaces::srv::FieldData>(
@@ -81,6 +83,7 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
   RCLCPP_INFO(this->get_logger(), "Node Configured and running");
 }
 
+
 void SickSafetyscannersRos2::receiveUDPPaket(
     const sick::datastructure::Data &data) {
   if (!m_config.m_msg_creator) {
@@ -91,19 +94,29 @@ void SickSafetyscannersRos2::receiveUDPPaket(
 
   if (!data.getMeasurementDataPtr()->isEmpty() &&
       !data.getDerivedValuesPtr()->isEmpty()) {
-    auto scan = m_config.m_msg_creator->createLaserScanMsg(data, this->now());
-    m_diagnosed_laser_scan_publisher->publish(scan);
-
-    sick_safetyscanners2_interfaces::msg::ExtendedLaserScan extended_scan =
-        m_config.m_msg_creator->createExtendedLaserScanMsg(data, this->now());
-
-    m_extended_laser_scan_publisher->publish(extended_scan);
-
-    auto output_paths = m_config.m_msg_creator->createOutputPathsMsg(data);
-    m_output_paths_publisher->publish(output_paths);
+    if(m_diagnosed_laser_scan_publisher->getPublisher()->get_subscription_count() > 0){
+      auto scan = m_config.m_msg_creator->createLaserScanMsg(data, this->now());
+      m_diagnosed_laser_scan_publisher->publish(std::move(scan));
+    }
+    
+    if(m_extended_laser_scan_publisher->get_subscription_count() > 0){
+      auto extended_scan =
+          m_config.m_msg_creator->createExtendedLaserScanMsg(data, this->now());
+      m_extended_laser_scan_publisher->publish(std::move(extended_scan));
+    }
+    if(m_output_paths_publisher->get_subscription_count() > 0){
+      auto output_paths = m_config.m_msg_creator->createOutputPathsMsg(data);
+      m_output_paths_publisher->publish(std::move(output_paths));
+    }
   }
 
-  m_last_raw_msg = m_config.m_msg_creator->createRawDataMsg(data);
-  m_raw_data_publisher->publish(m_last_raw_msg);
+  auto raw_msg = m_config.m_msg_creator->createRawDataMsg(data);
+  m_last_raw_msg = *raw_msg;
+  if(m_raw_data_publisher->get_subscription_count() > 0) {
+    m_raw_data_publisher->publish(std::move(raw_msg));
+  }
 }
 } // namespace sick
+
+#include "rclcpp_components/register_node_macro.hpp"
+RCLCPP_COMPONENTS_REGISTER_NODE(sick::SickSafetyscannersRos2)

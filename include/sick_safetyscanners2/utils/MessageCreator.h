@@ -76,7 +76,7 @@ public:
    *
    * \returns The constructed LaserScan Message
    */
-  sensor_msgs::msg::LaserScan
+  std::unique_ptr<sensor_msgs::msg::LaserScan>
   createLaserScanMsg(const sick::datastructure::Data &data, rclcpp::Time now);
 
   /*!
@@ -86,7 +86,7 @@ public:
    *
    * \returns The constructed OutputPaths Message
    */
-  sick_safetyscanners2_interfaces::msg::OutputPaths
+  std::unique_ptr<sick_safetyscanners2_interfaces::msg::OutputPaths>
   createOutputPathsMsg(const sick::datastructure::Data &data);
 
   /*!
@@ -98,7 +98,7 @@ public:
    *
    * \returns The constructed extended LaserScan Message
    */
-  sick_safetyscanners2_interfaces::msg::ExtendedLaserScan
+  std::unique_ptr<sick_safetyscanners2_interfaces::msg::ExtendedLaserScan>
   createExtendedLaserScanMsg(const sick::datastructure::Data &data,
                              rclcpp::Time now);
 
@@ -109,7 +109,7 @@ public:
    *
    * \returns The raw values of the sensor in a ROS2 Message.
    */
-  sick_safetyscanners2_interfaces::msg::RawMicroScanData
+  std::unique_ptr<sick_safetyscanners2_interfaces::msg::RawMicroScanData>
   createRawDataMsg(const sick::datastructure::Data &data);
 
 private:
