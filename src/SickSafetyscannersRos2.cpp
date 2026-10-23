@@ -44,17 +44,23 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
   initializeParameters(*this);
   loadParameters(*this);
 
+  // create default pub options (allows overriding QoS settings)
+  rclcpp::PublisherOptions pub_opts;
+  pub_opts.qos_overriding_options =
+      rclcpp::QosOverridingOptions::with_default_policies();
+
   // init publishers and services
   m_laser_scan_publisher =
-      this->create_publisher<sensor_msgs::msg::LaserScan>("scan", 1);
+      this->create_publisher<sensor_msgs::msg::LaserScan>("scan", 1, pub_opts);
   m_extended_laser_scan_publisher = this->create_publisher<
       sick_safetyscanners2_interfaces::msg::ExtendedLaserScan>("extended_scan",
-                                                               1);
+                                                               1, pub_opts);
   m_output_paths_publisher =
       this->create_publisher<sick_safetyscanners2_interfaces::msg::OutputPaths>(
-          "output_paths", 1);
+          "output_paths", 1, pub_opts);
   m_raw_data_publisher = this->create_publisher<
-      sick_safetyscanners2_interfaces::msg::RawMicroScanData>("raw_data", 1);
+      sick_safetyscanners2_interfaces::msg::RawMicroScanData>("raw_data", 1,
+                                                              pub_opts);
 
   m_field_data_service =
       this->create_service<sick_safetyscanners2_interfaces::srv::FieldData>(
