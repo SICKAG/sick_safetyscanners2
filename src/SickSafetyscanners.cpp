@@ -54,7 +54,7 @@ rcl_interfaces::msg::SetParametersResult SickSafetyscanners::parametersCallback(
       m_config.m_frame_id = param.value_to_string();
     } else if (param.get_name() == "host_ip") {
       m_config.m_communications_settings.host_ip =
-          boost::asio::ip::address_v4::from_string(param.value_to_string());
+          boost::asio::ip::make_address_v4(param.value_to_string());
       update_sensor_config = true;
     } else if (param.get_name() == "host_udp_port") {
       m_config.m_communications_settings.host_udp_port = param.as_int();
