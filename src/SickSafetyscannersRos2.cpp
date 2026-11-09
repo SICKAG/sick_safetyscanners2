@@ -68,6 +68,15 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
       std::bind(&SickSafetyscannersRos2::getStatusOverview, this,
                 std::placeholders::_1, std::placeholders::_2));
 
+  m_serial_number_service = this->create_service<std_srvs::srv::Trigger>(
+      "serial_number", std::bind(&SickSafetyscannersRos2::getSerialNumber, this,
+                                 std::placeholders::_1, std::placeholders::_2));
+
+  m_firmware_version_service = this->create_service<std_srvs::srv::Trigger>(
+      "firmware_version",
+      std::bind(&SickSafetyscannersRos2::getFirmwareVersion, this,
+                std::placeholders::_1, std::placeholders::_2));
+
   // Dynamic Parameter Change client
   m_param_callback = add_on_set_parameters_callback(
       std::bind(&SickSafetyscannersRos2::parametersCallback, this,
