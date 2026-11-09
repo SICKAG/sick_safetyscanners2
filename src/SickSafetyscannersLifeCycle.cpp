@@ -32,15 +32,14 @@
  */
 //----------------------------------------------------------------------
 
+#include <rclcpp_components/register_node_macro.hpp>
 #include <sick_safetyscanners2/SickSafetyscannersLifeCycle.hpp>
 
 namespace sick {
 
 SickSafetyscannersLifeCycle::SickSafetyscannersLifeCycle(
-    const std::string &node_name, bool intra_process_comms)
-    : rclcpp_lifecycle::LifecycleNode(
-          node_name,
-          rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms)) {
+    const rclcpp::NodeOptions &options)
+    : rclcpp_lifecycle::LifecycleNode("SickSafetyscannersLifecycle", options) {
   RCLCPP_INFO(this->get_logger(), "Initializing SickSafetyscannersLifeCycle ");
 
   // read parameters!
@@ -173,3 +172,5 @@ void SickSafetyscannersLifeCycle::receiveUDPPaket(
   m_raw_data_publisher->publish(m_last_raw_msg);
 }
 } // namespace sick
+
+RCLCPP_COMPONENTS_REGISTER_NODE(sick::SickSafetyscannersLifeCycle)

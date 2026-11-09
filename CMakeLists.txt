@@ -20,6 +20,7 @@ find_package(ament_cmake REQUIRED)
 find_package(Boost REQUIRED COMPONENTS chrono)
 find_package(diagnostic_updater REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
@@ -29,6 +30,7 @@ find_package(sick_safetyscanners2_interfaces REQUIRED)
 set(dependencies
         diagnostic_updater
         rclcpp
+        rclcpp_components
         rclcpp_lifecycle
         lifecycle_msgs
         sensor_msgs
@@ -36,42 +38,47 @@ set(dependencies
         sick_safetyscanners2_interfaces
 )
 
-add_executable(sick_safetyscanners2_node
-        src/sick_safetyscanners2_node.cpp
+add_library(sick_safetyscanners2_components SHARED
         src/SickSafetyscanners.cpp
         src/SickSafetyscannersRos2.cpp
-        src/utils/MessageCreator.cpp)
-
-target_link_libraries(sick_safetyscanners2_node
-        sick_safetyscanners_base::sick_safetyscanners_base
-        ${Boost_LIBRARIES})
-
-ament_target_dependencies(sick_safetyscanners2_node ${dependencies})
-
-target_include_directories(sick_safetyscanners2_node PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>)
-
-add_executable(sick_safetyscanners2_lifecycle_node
-        src/sick_safetyscanners2_lifecycle_node.cpp
-        src/SickSafetyscanners.cpp
         src/SickSafetyscannersLifeCycle.cpp
         src/utils/MessageCreator.cpp)
 
-target_link_libraries(sick_safetyscanners2_lifecycle_node
+target_link_libraries(sick_safetyscanners2_components
         sick_safetyscanners_base::sick_safetyscanners_base
         ${Boost_LIBRARIES})
 
-ament_target_dependencies(sick_safetyscanners2_lifecycle_node ${dependencies})
+ament_target_dependencies(sick_safetyscanners2_components ${dependencies})
 
-target_include_directories(sick_safetyscanners2_lifecycle_node PUBLIC
+target_include_directories(sick_safetyscanners2_components PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>)
+
+rclcpp_components_register_nodes(sick_safetyscanners2_components
+        "sick::SickSafetyscannersRos2"
+        "sick::SickSafetyscannersLifeCycle")
+
+add_executable(sick_safetyscanners2_node
+        src/sick_safetyscanners2_node.cpp)
+
+target_link_libraries(sick_safetyscanners2_node
+        sick_safetyscanners2_components)
+
+add_executable(sick_safetyscanners2_lifecycle_node
+        src/sick_safetyscanners2_lifecycle_node.cpp)
+
+target_link_libraries(sick_safetyscanners2_lifecycle_node
+        sick_safetyscanners2_components)
 
 install(DIRECTORY
         launch description rviz
         DESTINATION share/${PROJECT_NAME}/
 )
+
+install(TARGETS sick_safetyscanners2_components
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin)
 
 install(TARGETS sick_safetyscanners2_node
         EXPORT export_${PROJECT_NAME}

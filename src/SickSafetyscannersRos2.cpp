@@ -32,12 +32,14 @@
  */
 //----------------------------------------------------------------------
 
+#include <rclcpp_components/register_node_macro.hpp>
 #include <sick_safetyscanners2/SickSafetyscannersRos2.h>
 
 namespace sick {
 
-SickSafetyscannersRos2::SickSafetyscannersRos2()
-    : Node("SickSafetyscannersRos2") {
+SickSafetyscannersRos2::SickSafetyscannersRos2(
+    const rclcpp::NodeOptions &options)
+    : Node("SickSafetyscannersRos2", options) {
   RCLCPP_INFO(this->get_logger(), "Initializing SickSafetyscannersRos2 Node");
 
   // read parameters!
@@ -107,3 +109,5 @@ void SickSafetyscannersRos2::receiveUDPPaket(
   m_raw_data_publisher->publish(m_last_raw_msg);
 }
 } // namespace sick
+
+RCLCPP_COMPONENTS_REGISTER_NODE(sick::SickSafetyscannersRos2)
