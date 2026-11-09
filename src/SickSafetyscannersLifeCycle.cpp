@@ -76,6 +76,16 @@ SickSafetyscannersLifeCycle::on_configure(const rclcpp_lifecycle::State &) {
       std::bind(&SickSafetyscannersLifeCycle::getStatusOverview, this,
                 std::placeholders::_1, std::placeholders::_2));
 
+  m_serial_number_service = this->create_service<std_srvs::srv::Trigger>(
+      "serial_number",
+      std::bind(&SickSafetyscannersLifeCycle::getSerialNumber, this,
+                std::placeholders::_1, std::placeholders::_2));
+
+  m_firmware_version_service = this->create_service<std_srvs::srv::Trigger>(
+      "firmware_version",
+      std::bind(&SickSafetyscannersLifeCycle::getFirmwareVersion, this,
+                std::placeholders::_1, std::placeholders::_2));
+
   // Dynamic Parameter Change client
   m_param_callback = add_on_set_parameters_callback(
       std::bind(&SickSafetyscannersLifeCycle::parametersCallback, this,

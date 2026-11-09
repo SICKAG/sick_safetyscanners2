@@ -45,6 +45,7 @@
 #include <sick_safetyscanners2/utils/MessageCreator.h>
 
 #include <rclcpp/rclcpp.hpp>
+#include <std_srvs/srv/trigger.hpp>
 
 #include <string>
 
@@ -345,6 +346,12 @@ public:
       std::shared_ptr<
           sick_safetyscanners2_interfaces::srv::StatusOverview::Response>
           response);
+  bool getSerialNumber(
+      const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+      std::shared_ptr<std_srvs::srv::Trigger::Response> response);
+  bool getFirmwareVersion(
+      const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+      std::shared_ptr<std_srvs::srv::Trigger::Response> response);
 
   void readPersistentConfig();
   void readTypeCodeSettings();

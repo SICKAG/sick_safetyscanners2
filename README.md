@@ -159,6 +159,18 @@ Returns all configured protective and warning fields for the sensor
 Returns the status overview of the sensor.
 [There is further information of error codes.](docs/error_handling.md#error-codes)
 
+`
+~/serial_number
+`
+
+Returns the serial number of the sensor in the message field (`std_srvs/srv/Trigger`).
+
+`
+~/firmware_version
+`
+
+Returns the firmware version of the sensor in the message field (`std_srvs/srv/Trigger`).
+
 ### ROS2 parameters
 
 | Parameter Name        | Type    | Default      | Required on startup | Information                                                                                                                                                                                                                                |

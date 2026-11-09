@@ -317,6 +317,34 @@ bool SickSafetyscanners::getStatusOverview(
   return true;
 }
 
+bool SickSafetyscanners::getSerialNumber(
+    const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+    std::shared_ptr<std_srvs::srv::Trigger::Response> response) {
+  (void)request;
+
+  sick::datastructure::SerialNumber serial_number;
+  m_device->requestSerialNumber(serial_number);
+
+  response->message = serial_number.getSerialNumber();
+  response->success = true;
+
+  return true;
+}
+
+bool SickSafetyscanners::getFirmwareVersion(
+    const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+    std::shared_ptr<std_srvs::srv::Trigger::Response> response) {
+  (void)request;
+
+  sick::datastructure::FirmwareVersion firmware_version;
+  m_device->requestFirmwareVersion(firmware_version);
+
+  response->message = firmware_version.getFirmwareVersion();
+  response->success = true;
+
+  return true;
+}
+
 void SickSafetyscanners::readTypeCodeSettings() {
   RCLCPP_INFO(getLogger(), "Reading Type code settings");
   sick::datastructure::TypeCode type_code;
