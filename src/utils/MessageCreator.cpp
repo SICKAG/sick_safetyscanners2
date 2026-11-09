@@ -74,7 +74,7 @@ MessageCreator::createLaserScanMsg(const sick::datastructure::Data &data,
   scan.intensities.resize(num_scan_points);
 
   for (uint32_t i = 0; i < num_scan_points; ++i) {
-    const sick::datastructure::ScanPoint scan_point = scan_points.at(i);
+    const sick::datastructure::ScanPoint &scan_point = scan_points.at(i);
     // Filter for intensities
     if (m_min_intensities < static_cast<double>(scan_point.getReflectivity())) {
       scan.ranges[i] = static_cast<float>(scan_point.getDistance()) *
@@ -128,8 +128,8 @@ MessageCreator::createOutputPathsMsg(const sick::datastructure::Data &data) {
 
 sick_safetyscanners2_interfaces::msg::ExtendedLaserScan
 MessageCreator::createExtendedLaserScanMsg(
-    const sick::datastructure::Data &data, rclcpp::Time now) {
-  sensor_msgs::msg::LaserScan scan = createLaserScanMsg(data, now);
+    const sick::datastructure::Data &data,
+    const sensor_msgs::msg::LaserScan &scan) {
   sick_safetyscanners2_interfaces::msg::ExtendedLaserScan msg;
   msg.laser_scan = scan;
 
@@ -142,7 +142,7 @@ MessageCreator::createExtendedLaserScanMsg(
   msg.reflektor_median.resize(num_scan_points);
   std::vector<bool> medians = getMedianReflectors(scan_points);
   for (uint32_t i = 0; i < num_scan_points; ++i) {
-    const sick::datastructure::ScanPoint scan_point = scan_points.at(i);
+    const sick::datastructure::ScanPoint &scan_point = scan_points.at(i);
     msg.reflektor_status[i] = scan_point.getReflectorBit();
     msg.intrusion[i] = scan_point.getContaminationBit();
     msg.reflektor_median[i] = medians.at(i);
@@ -151,7 +151,7 @@ MessageCreator::createExtendedLaserScanMsg(
 }
 
 std::vector<bool> MessageCreator::getMedianReflectors(
-    const std::vector<sick::datastructure::ScanPoint> scan_points) {
+    const std::vector<sick::datastructure::ScanPoint> &scan_points) {
   std::vector<bool> res;
   res.resize(scan_points.size());
   bool last = false;
@@ -307,7 +307,7 @@ MessageCreator::createScanPointMsgVector(
   // measurement_data->getNumberOfBeams();
   uint32_t num_points = scan_points.size();
   for (uint32_t i = 0; i < num_points; i++) {
-    sick::datastructure::ScanPoint scan_point = scan_points.at(i);
+    const sick::datastructure::ScanPoint &scan_point = scan_points.at(i);
     sick_safetyscanners2_interfaces::msg::ScanPoint msg;
     msg.distance = scan_point.getDistance();
     msg.reflectivity = scan_point.getReflectivity();

@@ -159,7 +159,7 @@ std::string boolToString(bool b) { return b ? "true" : "false"; }
 void SickSafetyscanners::sensorDiagnostics(
     diagnostic_updater::DiagnosticStatusWrapper &diagnostic_status) {
   const sick_safetyscanners2_interfaces::msg::DataHeader &header =
-      m_last_raw_msg.header;
+      m_last_data_header;
   if (header.timestamp_time == 0 && header.timestamp_date == 0) {
     diagnostic_status.summary(diagnostic_msgs::msg::DiagnosticStatus::STALE,
                               "Could not get sensor state");
@@ -190,7 +190,7 @@ void SickSafetyscanners::sensorDiagnostics(
   diagnostic_status.addf("Timestamp time", "%u", header.timestamp_time);
 
   const sick_safetyscanners2_interfaces::msg::GeneralSystemState &state =
-      m_last_raw_msg.general_system_state;
+      m_last_general_system_state;
   diagnostic_status.add("Run mode active", boolToString(state.run_mode_active));
   diagnostic_status.add("Standby mode active",
                         boolToString(state.standby_mode_active));

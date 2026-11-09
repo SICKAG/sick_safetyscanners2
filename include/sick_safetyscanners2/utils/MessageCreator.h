@@ -100,7 +100,7 @@ public:
    */
   sick_safetyscanners2_interfaces::msg::ExtendedLaserScan
   createExtendedLaserScanMsg(const sick::datastructure::Data &data,
-                             rclcpp::Time now);
+                             const sensor_msgs::msg::LaserScan &scan);
 
   /*!
    * \brief Constructs a message containing all raw values from the sensor.
@@ -122,7 +122,7 @@ private:
 
   // Calculation to get the median point of a reflector
   std::vector<bool> getMedianReflectors(
-      const std::vector<sick::datastructure::ScanPoint> scan_points);
+      const std::vector<sick::datastructure::ScanPoint> &scan_points);
 
   // private helper functions to create the parts of the  messages
   sick_safetyscanners2_interfaces::msg::DataHeader

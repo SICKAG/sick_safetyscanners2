@@ -327,7 +327,9 @@ public:
   void stopCommunication();
 
   // Diagnostics
-  sick_safetyscanners2_interfaces::msg::RawMicroScanData m_last_raw_msg;
+  sick_safetyscanners2_interfaces::msg::DataHeader m_last_data_header;
+  sick_safetyscanners2_interfaces::msg::GeneralSystemState
+      m_last_general_system_state;
   void sensorDiagnostics(
       diagnostic_updater::DiagnosticStatusWrapper &diagnostic_status);
 
