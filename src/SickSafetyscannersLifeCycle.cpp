@@ -48,6 +48,10 @@ SickSafetyscannersLifeCycle::SickSafetyscannersLifeCycle(
   loadParameters(*this);
 }
 
+SickSafetyscannersLifeCycle::~SickSafetyscannersLifeCycle() {
+  m_device.reset();
+}
+
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 SickSafetyscannersLifeCycle::on_configure(const rclcpp_lifecycle::State &) {
   RCLCPP_INFO(this->get_logger(), "on_configure()...");

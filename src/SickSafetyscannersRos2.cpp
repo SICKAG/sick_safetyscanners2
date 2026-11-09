@@ -81,6 +81,10 @@ SickSafetyscannersRos2::SickSafetyscannersRos2()
   RCLCPP_INFO(this->get_logger(), "Node Configured and running");
 }
 
+SickSafetyscannersRos2::~SickSafetyscannersRos2() {
+  m_device.reset();
+}
+
 void SickSafetyscannersRos2::receiveUDPPaket(
     const sick::datastructure::Data &data) {
   if (!m_config.m_msg_creator) {

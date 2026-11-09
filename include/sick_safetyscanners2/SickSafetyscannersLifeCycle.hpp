@@ -73,6 +73,12 @@ public:
   explicit SickSafetyscannersLifeCycle(const std::string &node_name,
                                        bool intra_process_comms = false);
 
+  /*!
+   * \brief Destructor stopping the device, so the UDP thread no longer calls
+   * into publishers that are destroyed before the base class members
+   */
+  ~SickSafetyscannersLifeCycle();
+
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
   on_configure(const rclcpp_lifecycle::State &);
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
