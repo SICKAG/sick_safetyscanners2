@@ -1,6 +1,14 @@
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package sick_safetyscanners2
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Forthcoming
+-----------
+* Replaced ament_target_dependencies with target_link_libraries using exported CMake targets
+* Replaced deprecated Boost address_v4::from_string calls with make_address_v4
+* CMake CMP0167 support
+* NOTICE: Increased minimum required CMake version to 3.10
+* Contributors: Alejandro Hernandez Cordero, Christian Eichmann
 
 1.0.5 (2026-05-07)
 ------------------

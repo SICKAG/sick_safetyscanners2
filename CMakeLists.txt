@@ -1,5 +1,9 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 project(sick_safetyscanners2)
+
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 NEW)
+endif()
 
 # Default to C99
 if (NOT CMAKE_C_STANDARD)
@@ -31,7 +35,7 @@ set(dependencies
         rclcpp::rclcpp
         rclcpp_lifecycle::rclcpp_lifecycle
         ${lifecycle_msgs_TARGETS}
-        ${sensor_msgs}
+        ${sensor_msgs_TARGETS}
         sick_safetyscanners_base::sick_safetyscanners_base
         ${sick_safetyscanners2_interfaces_TARGETS}
 )
@@ -92,8 +96,15 @@ if (BUILD_TESTING)
     ament_lint_auto_find_test_dependencies()
 endif ()
 
-#TODO lookup what this does
-# For message creation,if used in this message
-ament_export_dependencies(${dependencies})
+# For message creation, if used in this message
+ament_export_dependencies(
+        diagnostic_updater
+        rclcpp
+        rclcpp_lifecycle
+        lifecycle_msgs
+        sensor_msgs
+        sick_safetyscanners_base
+        sick_safetyscanners2_interfaces
+)
 
 ament_package()
