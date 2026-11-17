@@ -8,6 +8,7 @@ Forthcoming
 * Replaced deprecated Boost address_v4::from_string calls with make_address_v4
 * CMake CMP0167 support
 * NOTICE: Increased minimum required CMake version to 3.10
+* BUGFIX: StatusOverview service correctly returns times and no longer crashes with FastDDS
 * Contributors: Alejandro Hernandez Cordero, Christian Eichmann
 
 1.0.5 (2026-05-07)
