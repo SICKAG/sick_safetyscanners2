@@ -148,20 +148,20 @@ public:
     std::string sensor_ip;
     node.template get_parameter<std::string>("sensor_ip", sensor_ip);
     RCLCPP_INFO(getLogger(), "sensor_ip: %s", sensor_ip.c_str());
-    m_config.m_sensor_ip = boost::asio::ip::address_v4::from_string(sensor_ip);
+    m_config.m_sensor_ip = boost::asio::ip::make_address_v4(sensor_ip);
 
     std::string interface_ip;
     node.template get_parameter<std::string>("interface_ip", interface_ip);
     RCLCPP_INFO(getLogger(), "interface_ip: %s", interface_ip.c_str());
     m_config.m_interface_ip =
-        boost::asio::ip::address_v4::from_string(interface_ip);
+        boost::asio::ip::make_address_v4(interface_ip);
 
     std::string host_ip;
     node.template get_parameter<std::string>("host_ip", host_ip);
     RCLCPP_INFO(getLogger(), "host_ip: %s", host_ip.c_str());
     // TODO check if valid IP?
     m_config.m_communications_settings.host_ip =
-        boost::asio::ip::address_v4::from_string(host_ip);
+        boost::asio::ip::make_address_v4(host_ip);
 
     int host_udp_port;
     node.template get_parameter<int>("host_udp_port", host_udp_port);
