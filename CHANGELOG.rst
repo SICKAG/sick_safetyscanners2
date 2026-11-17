@@ -2,8 +2,8 @@
 Changelog for package sick_safetyscanners2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.1.0 (2026-11-17)
+------------------
 * Replaced ament_target_dependencies with target_link_libraries using exported CMake targets
 * Replaced deprecated Boost address_v4::from_string calls with make_address_v4
 * CMake CMP0167 support
