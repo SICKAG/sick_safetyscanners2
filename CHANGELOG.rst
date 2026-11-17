@@ -7,6 +7,7 @@ Forthcoming
 * Replaced ament_target_dependencies with target_link_libraries using exported CMake targets
 * Replaced deprecated Boost address_v4::from_string calls with make_address_v4
 * CMake CMP0167 support
+* Added explicit dependency on lifecycle_msgs to package.xml
 * NOTICE: Increased minimum required CMake version to 3.10
 * BUGFIX: StatusOverview service correctly returns times and no longer crashes with FastDDS
 * Contributors: Alejandro Hernandez Cordero, Christian Eichmann

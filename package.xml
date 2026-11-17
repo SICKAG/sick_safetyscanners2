@@ -20,6 +20,7 @@
 
   <depend>boost</depend>
   <depend>diagnostic_updater</depend>
+  <depend>lifecycle_msgs</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_lifecycle</depend>
   <depend>sensor_msgs</depend>
